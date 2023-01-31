@@ -10,8 +10,8 @@ module.exports = {
                 use: ['babel-loader']
             },
             {
-                test: /\.css$/,
-                use: ["style-loader", "css-loader"]
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader", 'postcss-loader']
             },
             {
                 test: /\.(pdf|jpg|png|gif|svg|ico)$/,
@@ -39,5 +39,8 @@ module.exports = {
         static: {
             directory: path.join(__dirname, 'dist')
         }
-    }
+    },
+    stats: {
+        children: true,
+    },
 };

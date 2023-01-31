@@ -4,7 +4,7 @@ import './styles.css'
 
 const App = () => {
     return (
-        <div className='greenText'>This is a React component inside of Webflow!</div>
+        <div className='text-lg bg-red-500'>This is a React component inside of Webflow!</div>
     )
 }
 
