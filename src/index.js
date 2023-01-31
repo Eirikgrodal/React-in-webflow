@@ -2,12 +2,10 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import './styles.css'
 
-class App extends Component {
-    render() {
-        return (
-            <div>This is a React component inside of Webflow!</div>
-        )
-    }
+const App = () => {
+    return (
+        <div className='greenText'>This is a React component inside of Webflow!</div>
+    )
 }
 
 ReactDOM.render(
