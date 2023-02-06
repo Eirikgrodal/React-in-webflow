@@ -2,46 +2,103 @@ import './styles.css'
 
 import { Menu, Transition } from '@headlessui/react'
 import React, { Fragment, useEffect, useState } from 'react'
-import { classNames, days, getCalenderDays, useCalendar } from './config'
+import { classNames, getCalenderDays, getDayOfWeek, useCalendar } from './config'
 
 import ReactDOM from 'react-dom'
-import { fetchEvents } from './utils/fetchEvents'
+import axios from "axios";
 import useSWR from 'swr'
 
 const App = () => {
-    const { data, isLoading } = useSWR('events', fetchEvents())
-    useEffect(() => { console.log('data: ', data) }, [data])
     const [year, setYear] = useState(new Date().getFullYear())
     const [month, setMonth] = useState(new Date().getMonth())
     const [calendarDates, setCalendarDates] = useState()
     const [selectedDate, setSelectedDate] = useState()
+    const [currentEvents, setCurrentEvents] = useState()
 
     function nextMonth() {
-        if (month >= 0 && month < 11){
-          setMonth(month + 1);
+        if (month >= 0 && month < 11) {
+            setMonth(month + 1);
         } else {
-          setYear(year + 1);
-          setMonth(0);
+            setYear(year + 1);
+            setMonth(0);
         }
-      }
+    }
 
-      function prevMonth() {
-        if (month > 0 && month <= 11){
-          setMonth(month - 1);
+    function prevMonth() {
+        if (month > 0 && month <= 11) {
+            setMonth(month - 1);
         } else {
-          setYear(year - 1);
-          setMonth(11);
+            setYear(year - 1);
+            setMonth(11);
         }
-      }
+    }
 
-    
+
+    // finn column_idx og row_idx for griden (ex: start:{col:3, row:2} end:{col:4, row:2})
+    // finn hvilke events som overlapper - lagre som en verdi ( 0 for ingen, 1 for en overlap, 2 for 2 osv)
+    // finn om event gaar over kanten (gaar fra sondag til mandag) lagre som 0 hvis ingen, 1 for en overlap, 2 for 2 osv.
+    // printe hver event fra listen - bruk css grid - hvis den gaar over kanten saa print to element for hver rad - forst til sondag og etterpa fra mandag til event slutt
+
+    const findStartIntex = (startDato) => {
+        const day = getDayOfWeek(startDato)
+        const week = calendarDates
+        return {day, week}
+    }; 
+    const findHowManyDays = (startDato, sluttDato) => {
+        const startDatoen = new Date(startDato)
+        const sluttDatoen = new Date(sluttDato)
+        
+        const differenceInTime = sluttDatoen.getTime() - startDatoen.getTime(); //finner ut hvor mye tid som er mellom slutt dato og start dato
+        const differenceInDays = differenceInTime / (1000 * 3600 * 24); // finner ut hvor mange dager det er mange dager mellom slutt og start dato
+        
+        return Math.ceil(differenceInDays) // return days
+    };
+
+    const filterCurrentEvents = (events, calendarDates) => {
+        const currentEvents = events.data.items.filter(event => new Date(event['start-dato']).getMonth() === month)
+        const cleanedEvents = currentEvents.map((event) => {
+            return {
+                name: event.name,
+                slug: event.slug,
+                startIdx: findStartIntex(event['start-dato']),
+                days:findHowManyDays(event['start-dato'], event['slutt-dato']), // funksjon her
+                startDato: event['start-dato'],
+                sluttDato: event['slutt-dato'],
+                fleredager: event['flere-dager'],
+            }
+        })
+
+        return cleanedEvents
+    }
+
+
     useEffect(() => {
-        setCalendarDates(getCalenderDays(year, month, selectedDate))
-    }, [month, year, selectedDate])
-console.log(calendarDates)
+        setCalendarDates(getCalenderDays(year, month))
+    }, [month, year])
+
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const result = await axios(`https://vindel.vercel.app/api/events`);
+                setEvents(result.data);
+                setCurrentEvents(filterCurrentEvents(result));
+                setLoading(false);
+                console.log(result)
+            } catch (error) {
+                setError(error);
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
     return (
 
         <div className='w-full flex justify-center'>
+            <button onClick={() => console.log(currentEvents)}>Log</button>
             <div className='container'>
                 <h2 className="text-lg font-semibold text-gray-900">Upcoming meetings</h2>
                 <div className="lg:grid lg:grid-cols-12 lg:gap-x-16">
@@ -49,7 +106,7 @@ console.log(calendarDates)
                         <div className="flex flex-col items-center text-gray-900">
                             <div className='flex flex-row w-full'>
                                 <button
-                                    className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500" 
+                                    className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
                                     onClick={() => prevMonth()}
                                 >
                                     <span className="sr-only">Previous month</span>
@@ -58,16 +115,16 @@ console.log(calendarDates)
                                 <div className="flex-auto">
                                     <div className="font-semibold text-md">{getNorwegianMonthName(month)}</div>
                                     <div className="font-regular text-sm">{year}</div>
-                                    
-                                    </div>
+
+                                </div>
                                 <button
-                                    className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500" 
+                                    className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
                                     onClick={() => nextMonth()}
                                 >
                                     <span className="sr-only" >Next month</span>
                                     {'>'}
                                     {/*husk at du kan bruke month index */}
-                                    
+
                                 </button>
                             </div>
                             {/* dager i uka */}
@@ -96,10 +153,10 @@ console.log(calendarDates)
                                             day.isToday && !day.isSelected && 'text-indigo-600',
                                             dayIdx === 0 && 'rounded-tl-lg',
                                             dayIdx === 6 && 'rounded-tr-lg',
-                                            dayIdx === days.length - 7 && 'rounded-bl-lg',
-                                            dayIdx === days.length - 1 && 'rounded-br-lg'
+                                            dayIdx === calendarDates.length - 7 && 'rounded-bl-lg',
+                                            dayIdx === calendarDates.length - 1 && 'rounded-br-lg'
                                         )}
-                                        onClick={()=>setSelectedDate(day.date)}
+                                        onClick={() => setSelectedDate(day.date)}
                                     >
                                         <time
                                             dateTime={day.date}
@@ -124,7 +181,9 @@ console.log(calendarDates)
 
                     </div>
                     <ol className="mt-4 divide-y divide-gray-100 text-sm leading-6 lg:col-span-7 xl:col-span-8">
-                    {!isLoading && data && data.items.map((meeting) => (
+                        {loading && <p>Loading...</p>}
+                        {error && <p>Error: {error.message}</p>}
+                        {!loading && events && events?.items.map((meeting) => (
                             <li key={meeting.id} className="relative flex space-x-6 py-6 xl:static">
                                 <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="h-14 w-14 flex-none rounded-full" />
                                 <div className="flex-auto">
@@ -219,11 +278,11 @@ function getDayAndTime(date) {
 
 function getNorwegianMonthName(monthIndex) {
     const norwegianMonthNames = [
-      "Januar", "Februar", "Mars", "April", "Mai", "Juni",
-      "Juli", "August", "September", "Oktober", "November", "Desember"
+        "Januar", "Februar", "Mars", "April", "Mai", "Juni",
+        "Juli", "August", "September", "Oktober", "November", "Desember"
     ];
     return norwegianMonthNames[monthIndex];
-  }
+}
 
 ReactDOM.render(
     React.createElement(App, {}, null),
