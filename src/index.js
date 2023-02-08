@@ -47,8 +47,8 @@ const App = () => {
                 return {
                     name: event.name,
                     slug: event.slug,
-                    start: findGridIndex(event['start-dato'], currentEventsData, 'start-dato'), // [rowID, colID] ex: [2, 3]
-                    end: findGridIndex(event['slutt-dato'], currentEventsData, 'slutt-dato'),   // [rowID, colID] ex: [2, 3]
+                    start: findEndIndex(event['start-dato'], calendarDates), // [rowID, colID] ex: [2, 3]
+                    end: findEndIndex(event['slutt-dato'], calendarDates),   // [rowID, colID] ex: [2, 3]
                     days: findHowManyDays(event['start-dato'], event['slutt-dato']),            // ex: 1
                     startDato: event['start-dato'],
                     sluttDato: event['slutt-dato'],
@@ -187,7 +187,7 @@ const App = () => {
                                     {currentEvents && currentEvents.map((event, eventIdx) => (
                                         <>
                                             {/* single-day */}
-                                            <SingleDay event={event} />
+                                            <Event event={event} />
                                             {/* multi-day */}
                                             {event.days > 1 && event?.multipleWeeks === 0 && event.multipleMonths === 0 && (
                                                 <>
@@ -420,13 +420,25 @@ ReactDOM.render(
     document.getElementById('react-target')
 );
 
-const findGridIndex = (date, array, compareString) => {
+// end: findGridIndex(event['slutt-dato'], currentEventsData, 'slutt-dato'),
+const findStartIndex = (date, array) => {
     const day = getDayOfWeek(date)
-    const weekIndex = array.findIndex((e) => e[compareString] === date)
+    console.log("date ", date)
+    console.log("array ", array)
+    const weekIndex = array.findIndex((e) => e['slutt-dato'] === date)
+    console.log("weekIndex ", weekIndex)
     const week = Math.floor(weekIndex / 7)
     console.log("hmm ", weekIndex, " ", week)
     const month = new Date(date).getMonth()
     return [day, week, month]
+};
+
+const findEndIndex = (date, array) => {
+    const day = getDayOfWeek(date)
+    const dayIndex = array.findIndex((e) => e.date.slice(0, 10) === date.slice(0, 10))
+    const weekIndex = Math.ceil(dayIndex / 7) - 1
+    const month = new Date(date).getMonth()
+    return [day, weekIndex, month]
 };
 
 const sortEvents = (events) => {
@@ -501,7 +513,7 @@ const getMultipleMonths = (events) => {
     return eventsWithMM;
 }
 
-const SingleDay = ({ event }) => {
+const Event = ({ event }) => {
     return (
         <>
             {event.days === 1 && event.multipleWeeks === 0 && event.multipleMonths === 0 && (
