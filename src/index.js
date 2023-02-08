@@ -1,100 +1,35 @@
 import './styles.css'
-
 import { Menu, Transition } from '@headlessui/react'
-import React, { Fragment, useEffect, useState } from 'react'
-import { classNames, getCalenderDays, getDayOfWeek, useCalendar } from './config'
-
+import React, { Fragment } from 'react'
+import {
+    classNames,
+    getDayAndTime,
+    getNorwegianMonthName,
+} from './helpers'
 import ReactDOM from 'react-dom'
-import axios from "axios";
-import useSWR from 'swr'
+import useStore from './utils/useStore'
 
 const App = () => {
-    const [year, setYear] = useState(new Date().getFullYear())
-    const [month, setMonth] = useState(new Date().getMonth())
-    const [calendarDates, setCalendarDates] = useState()
-    const [selectedDate, setSelectedDate] = useState()
-    const [currentEvents, setCurrentEvents] = useState()
-    const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    function nextMonth() {
-        if (month >= 0 && month < 11) {
-            setMonth(month + 1);
-        } else {
-            setYear(year + 1);
-            setMonth(0);
-        }
-    }
-
-    function prevMonth() {
-        if (month > 0 && month <= 11) {
-            setMonth(month - 1);
-        } else {
-            setYear(year - 1);
-            setMonth(11);
-        }
-    }
-
-    useEffect(() => {
-        if (events.length !== 0) {
-            console.log("test ", (calendarDates.length / 7))
-            const currentEventsData = events.items.filter(event => {
-                const eventDate = new Date(event['start-dato'])
-                return eventDate.getMonth() === month && eventDate.getFullYear() === year
-            })
-            const CleansedEvents = currentEventsData.map((event) => {
-                return {
-                    name: event.name,
-                    slug: event.slug,
-                    start: findEndIndex(event['start-dato'], calendarDates), // [rowID, colID] ex: [2, 3]
-                    end: findEndIndex(event['slutt-dato'], calendarDates),   // [rowID, colID] ex: [2, 3]
-                    days: findHowManyDays(event['start-dato'], event['slutt-dato']),            // ex: 1
-                    startDato: event['start-dato'],
-                    sluttDato: event['slutt-dato'],
-                    overlaps: 0,
-                }
-            })
-            console.log("newcleanedevents ", CleansedEvents)
-            const EventsDataWithOverlap =
-                getMultipleMonths(
-                    getMultipleWeeks(
-                        getOverlaps(CleansedEvents)))
-            console.log("EventDataWithOverlap ", EventsDataWithOverlap)
-            setCurrentEvents(EventsDataWithOverlap)
-        }
-    }, [calendarDates, events])
-
-    // printe hver event fra listen - bruk css grid - hvis den gaar over kanten saa print to element for hver rad - forst til sondag og etterpa fra mandag til event slutt
-
-
-    const findHowManyDays = (startDato, sluttDato) => {
-        const startDatoen = new Date(startDato)
-        const sluttDatoen = new Date(sluttDato)
-
-        const differenceInTime = sluttDatoen.getTime() - startDatoen.getTime(); //finner ut hvor mye tid som er mellom slutt dato og start dato
-        const differenceInDays = differenceInTime / (1000 * 3600 * 24); // finner ut hvor mange dager det er mange dager mellom slutt og start dato
-
-        return Math.ceil(differenceInDays) // return days
-    };
-
-    useEffect(() => {
-        setCalendarDates(getCalenderDays(year, month))
-    }, [month, year])
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const result = await axios(`https://vindel.vercel.app/api/events`);
-                setEvents(result.data);
-                setLoading(false);
-            } catch (error) {
-                setError(error);
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, []);
+    const {
+        year,
+        setYear,
+        month,
+        setMonth,
+        calendarDates,
+        setCalendarDates,
+        selectedDate,
+        setSelectedDate,
+        currentEvents,
+        setCurrentEvents,
+        events,
+        setEvents,
+        loading,
+        setLoading,
+        error,
+        setError,
+        nextMonth,
+        prevMonth
+    } = useStore()
 
     return (
 
@@ -187,9 +122,9 @@ const App = () => {
                                     {currentEvents && currentEvents.map((event, eventIdx) => (
                                         <>
                                             {/* single-day */}
-                                            <Event event={event} />
+                                            <Event event={event} conditions={true} />
                                             {/* multi-day */}
-                                            {event.days > 1 && event?.multipleWeeks === 0 && event.multipleMonths === 0 && (
+                                            {/* {event.days > 1 && event?.multipleWeeks === 0 && event.multipleMonths === 0 && (
                                                 <>
                                                     <div
                                                         id="event"
@@ -201,11 +136,11 @@ const App = () => {
                                                     >
                                                     </div>
                                                 </>
-                                            )}
+                                            )} */}
 
                                             {/* stacked multi */}
                                             {/* todo: add index on the item or check index here for the gridRow */}
-                                            {event.overlaps > 0 && event.days > 1 && event?.multipleWeeks === 0 && event.multipleMonths === 0 && (
+                                            {/* {event.overlaps > 0 && event.days > 1 && event?.multipleWeeks === 0 && event.multipleMonths === 0 && (
                                                 <div
                                                     id="event"
                                                     style={{
@@ -224,11 +159,11 @@ const App = () => {
                                                         }}
                                                         className='bg-green-500 rounded-full'
                                                     />
-                                                </div>)}
+                                                </div>)} */}
 
                                             {/* stacked single */}
                                             {/* todo: add index on the item or check index here for the gridRow */}
-                                            {event.overlaps > 0 && event.days === 1 && event?.multipleWeeks === 0 && event.multipleMonths === 0 && (
+                                            {/* {event.overlaps > 0 && event.days === 1 && event?.multipleWeeks === 0 && event.multipleMonths === 0 && (
                                                 <div
                                                     id="event"
                                                     style={{
@@ -247,7 +182,7 @@ const App = () => {
                                                         }}
                                                         className='bg-blue-500 rounded-full'
                                                     />
-                                                </div>)}
+                                                </div>)} */}
 
                                         </>
                                     ))}
@@ -257,7 +192,7 @@ const App = () => {
 
 
                                     {/* multi-week right */}
-                                    <div
+                                    {/* <div
                                         id="event"
                                         style={{
                                             gridRow: `3 / 4`,
@@ -265,10 +200,10 @@ const App = () => {
                                         }}
                                         className='bg-red-500 h-[65%] ml-[12px] rounded-l-full'
                                     >
-                                    </div>
+                                    </div> */}
 
                                     {/* multi-week left */}
-                                    <div
+                                    {/* <div
                                         id="event"
                                         style={{
                                             gridRow: `4 / 5`,
@@ -276,10 +211,10 @@ const App = () => {
                                         }}
                                         className='bg-red-500 h-[65%] mr-[12px] rounded-r-full'
                                     >
-                                    </div>
+                                    </div> */}
 
                                     {/* stacked */}
-                                    <div
+                                    {/* <div
                                         id="event"
                                         style={{
                                             gridRow: `5 / 6`,
@@ -297,7 +232,7 @@ const App = () => {
                                             }}
                                             className='bg-red-500 rounded-full'
                                         />
-                                    </div>
+                                    </div> */}
 
                                 </div>
                             </div>
@@ -401,131 +336,90 @@ const App = () => {
     )
 }
 
-function getDayAndTime(date) {
-    const dateObject = new Date(date);
-    const options = { weekday: 'long', hour: 'numeric', minute: 'numeric' };
-    return dateObject.toLocaleString('no-NO', options);
-}
-
-function getNorwegianMonthName(monthIndex) {
-    const norwegianMonthNames = [
-        "Januar", "Februar", "Mars", "April", "Mai", "Juni",
-        "Juli", "August", "September", "Oktober", "November", "Desember"
-    ];
-    return norwegianMonthNames[monthIndex];
-}
-
 ReactDOM.render(
     React.createElement(App, {}, null),
     document.getElementById('react-target')
 );
 
-// end: findGridIndex(event['slutt-dato'], currentEventsData, 'slutt-dato'),
-const findStartIndex = (date, array) => {
-    const day = getDayOfWeek(date)
-    console.log("date ", date)
-    console.log("array ", array)
-    const weekIndex = array.findIndex((e) => e['slutt-dato'] === date)
-    console.log("weekIndex ", weekIndex)
-    const week = Math.floor(weekIndex / 7)
-    console.log("hmm ", weekIndex, " ", week)
-    const month = new Date(date).getMonth()
-    return [day, week, month]
-};
-
-const findEndIndex = (date, array) => {
-    const day = getDayOfWeek(date)
-    const dayIndex = array.findIndex((e) => e.date.slice(0, 10) === date.slice(0, 10))
-    const weekIndex = Math.ceil(dayIndex / 7) - 1
-    const month = new Date(date).getMonth()
-    return [day, weekIndex, month]
-};
-
-const sortEvents = (events) => {
-    return events.sort((a, b) => {
-        if (a.start[0] === b.start[0]) {
-            return a.start[1] - b.start[1];
-        } else {
-            return a.start[0] - b.start[0];
-        }
-    });
-}
-
-const getOverlaps = (events) => {
-    const sortedEvents = sortEvents(events); // sort events
-    const compareWeeks = sortedEvents.map((e) => {
-        return getDaysBetween(e.start, e.end); // get all the days of the comparison event as an array
-    })
-    const eventsWithOverlap = sortedEvents.map((event) => { // for each event 
-        let overlapCount = -1; // start with 0 overlaps (-1 because it will always match itself)
-        let eventDays = getDaysBetween(event.start, event.end); // get all the days of the event as an array
-        compareWeeks.map((compareWeek) => {
-            if (compareWeek.some(compareWeekDay =>
-                eventDays.some(eventDay => compareWeekDay.toString() === eventDay.toString())
-            )) overlapCount++; // if any of them match, add 1 to overlapCount
-        })
-        return { ...event, overlaps: overlapCount }; // return the event with the correct overlapCount
-    })
-    return eventsWithOverlap
-}
-
-const getDaysBetween = (start, end) => {
-    let days = [];
-    if (start[1] === end[1]) { // hvis ukene er like
-        for (let j = start[0]; j <= end[0]; j++) { // for hver dag mellom start og end
-            days.push([j, start[1]]); // legg til dagene
-        }
-    }
-    else for (let i = start[1]; i <= end[1]; i++) { // for hver uke
-        switch (true) {
-            case i === start[1]:
-                for (let j = start[0]; j <= 6; j++) {
-                    days.push([j, i]);
-                }
-                break;
-            case i < end[1]:
-                for (let j = 0; j <= 6; j++) {
-                    days.push([j, i]);
-                }
-                break;
-            case i === end[1]:
-                console.log("last week");
-                for (let j = 0; j <= end[0]; j++) {
-                    days.push([j, i]);
-                }
-                break;
-        }
-    }
-    return days
-}
-
-const getMultipleWeeks = (events) => {
-    const eventsWithMW = events.map((event) => {
-        return { ...event, multipleWeeks: event.start[1] - event.end[1] };
-    })
-    return eventsWithMW;
-}
-
-const getMultipleMonths = (events) => {
-    const eventsWithMM = events.map((event) => {
-        return { ...event, multipleMonths: event.start[2] - event.end[2] };
-    })
-    return eventsWithMM;
-}
-
-const Event = ({ event }) => {
+// conditions: event.days === 1 && event.multipleWeeks === 0 && event.multipleMonths === 0
+const Event = ({ event, conditions }) => {
     return (
         <>
-            {event.days === 1 && event.multipleWeeks === 0 && event.multipleMonths === 0 && (
+            {conditions && (
                 <div
                     id="event"
                     style={{
-                        gridRow: `1 / 2`,
-                        gridColumn: `1 / 1`
+                        gridRow: `${event.start[1]} / ${event.end[1] + 1}`, // hvor høyt
+                        gridColumn: `${event.start[0]} / ${event.end[0] + 1}`, // hvor bredt
+                        display: "grid",
+                        gridTemplateColumns: "repeat(1,1fr)",
+                        gridTemplateRows: `repeat(${event.overlaps + 1}, 1fr)` // hvor mange rader
                     }}
-                    className='bg-green-500 w-[50%] aspect-square rounded-full justify-self-center'
-                />
+                    className={classNames(
+                        event.days > 1 ? 'w-[95%]' : 'aspect-square', // if event is longer than one day
+                        event.overlaps > 0 ? "h-[90%]" : "bg-green-500 h-[75%]",
+                        'rounded-full justify-self-center',
+                    )}
+                >
+                    <div
+                        style={{
+                            gridRow: `2 / 3`,
+                        }}
+                        className={classNames(
+                            event.overlaps > 0 ? "bg-green-500" : "invisible",
+                            "rounded-full"
+                        )} />
+                </div>
             )}
         </>
     )
 }
+
+// {
+//     event.days > 1 && event?.multipleWeeks === 0 && event.multipleMonths === 0 && (
+//         <>
+//             <div
+//                 id="event"
+//                 style={{
+//                     gridRow: `${event.start[1] + 1} / ${event.end[1] + 2}`,
+//                     gridColumn: `${event.start[0] + 1} / ${event.end[0] + 2}`
+//                 }}
+//                 className='bg-gray-500 h-[65%] mx-[12px] rounded-full'
+//             >
+//             </div>
+//         </>
+//     )
+// }
+
+// <div
+//     id="event"
+//     style={{
+//         gridRow: `3 / 4`,
+//         gridColumn: `5 / 8`
+//     }}
+//     className='bg-red-500 h-[65%] ml-[12px] rounded-l-full'
+// >
+// </div> 
+
+// {/* stacked multi */ }
+// {/* todo: add index on the item or check index here for the gridRow */ }
+// {/* {event.overlaps > 0 && event.days > 1 && event?.multipleWeeks === 0 && event.multipleMonths === 0 && (
+//                                                 <div
+//                                                     id="event"
+//                                                     style={{
+//                                                         gridRow: `${event.start[1]} / ${event.end[1]}`,
+//                                                         gridColumn: `${event.start[0]} / ${event.end[0]}`,
+//                                                         display: "grid",
+//                                                         gridTemplateColumns: "repeat(1,1fr)",
+//                                                         gridTemplateRows: `repeat(${event.overlaps}, 1fr)`
+
+//                                                     }}
+//                                                     className='h-[90%] mx-[12px]'
+//                                                 >
+//                                                     <div
+//                                                         style={{
+//                                                             gridRow: `1 / 3`,
+//                                                         }}
+//                                                         className='bg-green-500 rounded-full'
+//                                                     />
+//                                                 </div>)} */}
