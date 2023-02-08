@@ -187,16 +187,7 @@ const App = () => {
                                     {currentEvents && currentEvents.map((event, eventIdx) => (
                                         <>
                                             {/* single-day */}
-                                            {event.days === 1 && event.multipleWeeks === 0 && event.multipleMonths === 0 && (
-                                                <div
-                                                    id="event"
-                                                    style={{
-                                                        gridRow: `1 / 2`,
-                                                        gridColumn: `1 / 1`
-                                                    }}
-                                                    className='bg-red-500 w-[50%] aspect-square rounded-full justify-self-center'
-                                                />
-                                            )}
+                                            <SingleDay event={event} />
                                             {/* multi-day */}
                                             {event.days > 1 && event?.multipleWeeks === 0 && event.multipleMonths === 0 && (
                                                 <>
@@ -433,7 +424,7 @@ const findGridIndex = (date, array, compareString) => {
     const day = getDayOfWeek(date)
     const weekIndex = array.findIndex((e) => e[compareString] === date)
     const week = Math.floor(weekIndex / 7)
-    console.log("hmm ",weekIndex, " ", week)
+    console.log("hmm ", weekIndex, " ", week)
     const month = new Date(date).getMonth()
     return [day, week, month]
 };
@@ -508,4 +499,21 @@ const getMultipleMonths = (events) => {
         return { ...event, multipleMonths: event.start[2] - event.end[2] };
     })
     return eventsWithMM;
+}
+
+const SingleDay = ({ event }) => {
+    return (
+        <>
+            {event.days === 1 && event.multipleWeeks === 0 && event.multipleMonths === 0 && (
+                <div
+                    id="event"
+                    style={{
+                        gridRow: `1 / 2`,
+                        gridColumn: `1 / 1`
+                    }}
+                    className='bg-green-500 w-[50%] aspect-square rounded-full justify-self-center'
+                />
+            )}
+        </>
+    )
 }
