@@ -33,7 +33,7 @@ const App = () => {
             <div className="flex flex-col items-center text-gray-900">
                 <div className='flex flex-row w-full'>
                     <button
-                        className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+                        className="h-8 aspect-square bg-transparent hover:bg-blue-50 hover:shadow-md rounded-full flex flex-none items-center justify-center text-gray-400 hover:text-gray-500"
                         onClick={() => prevMonth()}
                     >
                         <span className="sr-only">Previous month</span>
@@ -45,7 +45,7 @@ const App = () => {
 
                     </div>
                     <button
-                        className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+                        className="h-8 aspect-square bg-transparent hover:bg-blue-50 hover:shadow-md rounded-full flex flex-none items-center justify-center text-gray-400 hover:text-gray-500"
                         onClick={() => nextMonth()}
                     >
                         <span className="sr-only" >Next month</span>
@@ -72,7 +72,7 @@ const App = () => {
                                 key={day.date}
                                 type="button"
                                 className={classNames(
-                                    'py-1.5 hover:bg-gray-100 focus:z-10',
+                                    'py-3 hover:bg-gray-100 focus:z-10',
                                     day.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
                                     (day.isSelected || day.isToday) && 'font-semibold',
                                     day.isSelected && 'text-white',
@@ -82,7 +82,8 @@ const App = () => {
                                     dayIdx === 0 && 'rounded-tl-lg',
                                     dayIdx === 6 && 'rounded-tr-lg',
                                     dayIdx === calendarDates.length - 7 && 'rounded-bl-lg',
-                                    dayIdx === calendarDates.length - 1 && 'rounded-br-lg'
+                                    dayIdx === calendarDates.length - 1 && 'rounded-br-lg',
+                                    // 'h-14'
                                 )}
                                 onClick={() => setSelectedDate(day.date)}
                             >
@@ -111,7 +112,7 @@ const App = () => {
                         }}
                     >
                         {currentEvents && currentEvents.map((event, eventIdx) => (
-                            <Event event={event} conditions={true} />
+                            <Event event={event} conditions={true} key={eventIdx} />
                         ))}
                     </div>
                 </div>
@@ -181,7 +182,7 @@ const Event = ({ event }) => {
                     (event.squaredEnd && event.squaredStart) ? "w-[100%]"
                         : event.squaredEnd ? "justify-self-end w-[97%]" : "",
                     event.days === 1 ? 'aspect-square' : '', // if event is longer than one day
-                    event.overlaps > 0 ? "h-[90%]" : "h-[75%]",
+                    event.overlaps > 0 ? "h-[80%]" : "h-[65%]",
                     (!event.squaredEnd && !event.squaredStart) ? 'justify-self-center' : '',
                 )}
             >
