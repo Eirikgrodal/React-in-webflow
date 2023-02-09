@@ -21,8 +21,6 @@ export default function useStore() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-
-
   function nextMonth() {
     if (month >= 0 && month < 11) {
       setMonth(month + 1);
@@ -31,7 +29,6 @@ export default function useStore() {
       setMonth(0);
     }
   }
-
   function prevMonth() {
     if (month > 0 && month <= 11) {
       setMonth(month - 1);
@@ -41,14 +38,8 @@ export default function useStore() {
     }
   }
 
-
-
-  // printe hver event fra listen - bruk css grid - hvis den gaar over kanten saa print to element for hver rad - forst til sondag og etterpa fra mandag til event slutt
-
-
   useEffect(() => {
     if (events.length !== 0) {
-      console.log("test ", (calendarDates.length / 7))
       const currentEventsData = events.items.filter(event => {
         const eventDate = new Date(event['start-dato'])
         return eventDate.getMonth() === month && eventDate.getFullYear() === year
@@ -67,7 +58,6 @@ export default function useStore() {
           overlaps: 0,
         }
       })
-      console.log("newcleanedevents ", CleansedEvents)
       const EventsDataWithOverlap =
         getOverlaps(
           splitMultiWeeks(
@@ -75,7 +65,7 @@ export default function useStore() {
               getMultipleWeeks(
                 sortEvents(CleansedEvents)
               ))))
-      console.log("EventDataWithOverlap ", EventsDataWithOverlap)
+      console.log("cleaned events ", EventsDataWithOverlap)
       setCurrentEvents(EventsDataWithOverlap)
     }
   }, [calendarDates, events])

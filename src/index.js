@@ -12,21 +12,13 @@ import useStore from './utils/useStore'
 const App = () => {
     const {
         year,
-        setYear,
         month,
-        setMonth,
         calendarDates,
-        setCalendarDates,
-        selectedDate,
         setSelectedDate,
         currentEvents,
-        setCurrentEvents,
         events,
-        setEvents,
         loading,
-        setLoading,
         error,
-        setError,
         nextMonth,
         prevMonth
     } = useStore()
@@ -34,7 +26,6 @@ const App = () => {
     return (
 
         <div className='w-full flex justify-center'>
-            <button onClick={() => console.log(currentEvents)}>Log</button>
             <div className='container'>
                 <h2 className="text-lg font-semibold text-gray-900">Upcoming meetings</h2>
                 <div className="lg:grid lg:grid-cols-12 lg:gap-x-16">
