@@ -185,7 +185,6 @@ export function splitMultiWeeks(currentEventsData) {
             newDatesArray[0].map((week) => {
                 const isLastItem = newDatesArray[0][newDatesArray[0].length - 1].toString() === week.toString()
                 const isFirstItem = newDatesArray[0][0].toString() === week.toString()
-                console.log(isLastItem)
                 const newSplitEvent = {
                     ...event,
                     start: week[0],
@@ -269,17 +268,14 @@ export const createOverlapIndexes = (events) => {
         let currentIndex = 0;
 
         if (event.overlaps === 0) {
-            console.log("does not overlap")
             return {
                 ...event,
                 overlapIndex: 0
             }
         } else {
-            console.log("it overlaps")
             let j = currentIndex + 1
             event.overlapsWith.forEach((overlapEvent_slug) => {
                 const overlapEvent = events.find((e) => e.slug === overlapEvent_slug)
-                // console.log("overlapEvent ", overlapEvent)
                 const isAlreadyInTemp_overlap = tempEvents.some((e) => e.slug === overlapEvent_slug) // if the overlap event is not in tempEvents, we should add it
                 if (!isAlreadyInTemp_overlap) {
                     tempEvents.push(
@@ -288,14 +284,12 @@ export const createOverlapIndexes = (events) => {
                             overlapIndex: j,
                         }
                     )
-                    // console.log("this is the new temp: ", tempEvents)
                     j++
                 }
             })
         }
         const isAlreadyinTemp_event = tempEvents.some((e) => e.slug === event.slug) // if the event is not in tempEvents, we should return it with the current index
         if (!isAlreadyinTemp_event) {
-            console.log("not in tempEvents")
             return (
                 {
                     ...event,
@@ -304,14 +298,12 @@ export const createOverlapIndexes = (events) => {
             )
         }
         else {
-            console.log("is in tempEvents")
             return {                                                           // else return it with the index from tempEvents
                 ...event,
                 overlapIndex: tempEvents.find((e) => e.slug === event.slug).overlapIndex
             }
         }
     })
-    console.log("end result ", eventsWithOverlap)
 
     // return eventIndex;
     return eventsWithOverlap

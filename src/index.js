@@ -153,7 +153,6 @@ const Event = ({ event }) => {
     const handleClick = () => {
         if (loaded && window.innerWidth < 1025 && !mobileClicked) {
             setHover(true)
-            console.log("click hover")
             setMobileClicked(true)
         } else {
             window.location.assign("https://www.vindel.no/hva-skjer/" + event.slug)
