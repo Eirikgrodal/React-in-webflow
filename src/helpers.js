@@ -160,8 +160,9 @@ export function splitMultiWeeks(currentEventsData) {
             // todo - create a new event for every week returned here
             const newDatesArray = splitMultiWeeksWithMonthChange(event.start, event.end)
             newDatesArray[0].map((week) => {
-                const isLastItem = newDatesArray.slice(-1)[0].toString() === week.toString()
+                const isLastItem = newDatesArray[0][newDatesArray[0].length - 1].toString() === week.toString()
                 const isFirstItem = newDatesArray[0][0].toString() === week.toString()
+                console.log(isLastItem)
                 const newSplitEvent = {
                     ...event,
                     start: week[0],

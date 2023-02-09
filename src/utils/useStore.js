@@ -59,8 +59,8 @@ export default function useStore() {
         }
       })
       const EventsDataWithOverlap =
-        getOverlaps(
-          splitMultiWeeks(
+        splitMultiWeeks(
+          getOverlaps(
             getMultipleMonths(
               getMultipleWeeks(
                 sortEvents(CleansedEvents)

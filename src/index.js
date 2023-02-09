@@ -340,25 +340,31 @@ const Event = ({ event, conditions }) => {
                 <div
                     id="event"
                     style={{
-                        gridRow: `${event.start[1]} / ${event.end[1] + 1}`, // hvor høyt
-                        gridColumn: `${event.start[0]} / ${event.end[0] + 1}`, // hvor bredt
+                        gridRow: `${event.start[1] + 1}/ ${event.end[1] + 2}`, // hvor høyt
+                        gridColumn: `${event.start[0] + 1} / ${event.end[0] + 2}`, // hvor bredt
                         display: "grid",
                         gridTemplateColumns: "repeat(1,1fr)",
                         gridTemplateRows: `repeat(${event.overlaps + 1}, 1fr)` // hvor mange rader
                     }}
                     className={classNames(
                         event.days > 1 ? 'w-[95%]' : 'aspect-square', // if event is longer than one day
-                        event.overlaps > 0 ? "h-[90%]" : "bg-green-500 h-[75%]",
-                        'rounded-full justify-self-center',
+                        event.overlaps > 0 ? "h-[90%]" : "h-[75%]",
+                        'justify-self-center',
                     )}
                 >
                     <div
                         style={{
-                            gridRow: `2 / 3`,
+                            gridRow: `1 / {event.overlaps + 1}`,
                         }}
                         className={classNames(
-                            event.overlaps > 0 ? "bg-green-500" : "invisible",
-                            "rounded-full"
+                            event.overlaps > 0 ? "bg-green-500" : event.days > 1 ? "bg-blue-500" : "bg-red-500", // replace this with actual colors
+                            (event.squaredEnd && event.squaredStart) ?                      // square or rounded
+                                "" :
+                                event.squaredEnd ?
+                                    "rounded-l-full" :
+                                    event.squaredStart ?
+                                        "rounded-r-full" :
+                                        "rounded-full",
                         )} />
                 </div>
             )}
