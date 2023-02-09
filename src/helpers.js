@@ -22,7 +22,6 @@ export function getDayOfWeek(isoDate) {
 
 export function getPreviousWeekdays(isoDate) {
     const date = new Date(isoDate);
-    console.log('iso ', isoDate)
     const dayOfWeek = getDayOfWeek(isoDate);
     const weekdays = [];
     for (let i = dayOfWeek - 1; i >= 0; i--) {
@@ -68,12 +67,8 @@ export function classNames(...classes) {
 
 export const findStartIndex = (date, array) => {
     const day = getDayOfWeek(date)
-    console.log("date ", date)
-    console.log("array ", array)
     const weekIndex = array.findIndex((e) => e['slutt-dato'] === date)
-    console.log("weekIndex ", weekIndex)
     const week = Math.floor(weekIndex / 7)
-    console.log("hmm ", weekIndex, " ", week)
     const month = new Date(date).getMonth()
     return [day, week, month]
 };
@@ -133,7 +128,6 @@ export const getDaysBetween = (start, end) => {
                 }
                 break;
             case i === end[1]:
-                console.log("last week");
                 for (let j = 0; j <= end[0]; j++) {
                     days.push([j, i]);
                 }
@@ -165,7 +159,6 @@ export function splitMultiWeeks(currentEventsData) {
             const newEventsArray = [];
             // todo - create a new event for every week returned here
             const newDatesArray = splitMultiWeeksWithMonthChange(event.start, event.end)
-            console.log("here are the new splitted dates ", newDatesArray)
             newDatesArray[0].map((week) => {
                 const isLastItem = newDatesArray.slice(-1)[0].toString() === week.toString()
                 const isFirstItem = newDatesArray[0][0].toString() === week.toString()
@@ -180,14 +173,12 @@ export function splitMultiWeeks(currentEventsData) {
                     totalDays: event.days,
                     days: week[1][0] - week[0][0] + 1 // endDay - startDay + 1
                 }
-                console.log('month splitted ', newSplitEvent)
                 newEventsArray.push(newSplitEvent)
             })
 
             newArray.push(...newEventsArray)
         }
         else {
-            console.log('not splitted, but appended ', event)
             newArray.push(event)
         }
     });
