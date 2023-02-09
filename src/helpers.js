@@ -93,17 +93,40 @@ export const sortEvents = (events) => {
 
 export const getOverlaps = (events) => {
     const compareWeeks = events.map((e) => {
-        return getDaysBetween(e.start, e.end); // get all the days of the comparison event as an array
+        return { week: e, days: getDaysBetween(e.start, e.end) }; // get all the days of the comparison event as an array
     })
     const eventsWithOverlap = events.map((event) => { // for each event 
         let overlapCount = -1; // start with 0 overlaps (-1 because it will always match itself)
+        let overlapMax = 0; // start with 0 max overlaps
+        let overlapsWith_slugs = []; // array of events it overlaps with
         let eventDays = getDaysBetween(event.start, event.end); // get all the days of the event as an array
         compareWeeks.map((compareWeek) => {
-            if (compareWeek.some(compareWeekDay =>
+            const anyDaysMatch = compareWeek.days.some(compareWeekDay =>
                 eventDays.some(eventDay => compareWeekDay.toString() === eventDay.toString())
-            )) overlapCount++; // if any of them match, add 1 to overlapCount
+            ); // check if any of the days match
+            if (anyDaysMatch) {
+                compareWeek.days.forEach(compareWeekDay => { // for each day in the comparison week
+                    eventDays.forEach(eventDay => { // for each day in the current event
+                        if (compareWeekDay.toString() === eventDay.toString()) {
+                            const day_overlap = eventDays.filter((e) => e.toString() === eventDay.toString()).length
+                            if (day_overlap > overlapMax) {
+                                overlapMax = day_overlap
+                            }
+                        }
+                    })
+                }
+                )
+                overlapCount++
+                overlapsWith_slugs.push(compareWeek.week.slug)
+            }; // if any of them match, add 1 to overlapCount && add the event to the overlapsWith array
+
         })
-        return { ...event, overlaps: overlapCount }; // return the event with the correct overlapCount
+        return {
+            ...event,
+            overlaps: overlapCount,
+            overlapsWith: overlapsWith_slugs.filter((e) => e !== event.slug),
+            overlapMax: overlapMax
+        }; // return the event with the correct overlapCount
     })
     return eventsWithOverlap
 }
@@ -198,8 +221,9 @@ export function splitMultiWeeksWithMonthChange(start, end) {
     return weeks
 }
 
-export function splitMultiWeeksWithoutMonthChange(start, end) {
+export function splitMultiWeeksWithoutMonthChange(start, end, index = 0) {
     const weeks = [];
+    let currentIndex = index; // saves the index of the week we are currently on (used for finding the right index when printing)
     for (let i = start[1]; i <= end[1]; i++) {
         let week;
         if (i === start[1]) {
@@ -237,3 +261,95 @@ export const findHowManyDays = (startDato, sluttDato) => {
 
     return Math.ceil(differenceInDays) // return days
 };
+
+export const createOverlapIndexes = (events) => {
+    const tempEvents = []
+
+    const eventsWithOverlap = events.map((event) => {
+        let currentIndex = 0;
+
+        if (event.overlaps === 0) {
+            console.log("does not overlap")
+            return {
+                ...event,
+                overlapIndex: 0
+            }
+        } else {
+            console.log("it overlaps")
+            let j = currentIndex + 1
+            event.overlapsWith.forEach((overlapEvent_slug) => {
+                const overlapEvent = events.find((e) => e.slug === overlapEvent_slug)
+                // console.log("overlapEvent ", overlapEvent)
+                const isAlreadyInTemp_overlap = tempEvents.some((e) => e.slug === overlapEvent_slug) // if the overlap event is not in tempEvents, we should add it
+                if (!isAlreadyInTemp_overlap) {
+                    tempEvents.push(
+                        {
+                            ...overlapEvent,
+                            overlapIndex: j,
+                        }
+                    )
+                    // console.log("this is the new temp: ", tempEvents)
+                    j++
+                }
+            })
+        }
+        const isAlreadyinTemp_event = tempEvents.some((e) => e.slug === event.slug) // if the event is not in tempEvents, we should return it with the current index
+        if (!isAlreadyinTemp_event) {
+            console.log("not in tempEvents")
+            return (
+                {
+                    ...event,
+                    overlapIndex: currentIndex
+                }
+            )
+        }
+        else {
+            console.log("is in tempEvents")
+            return {                                                           // else return it with the index from tempEvents
+                ...event,
+                overlapIndex: tempEvents.find((e) => e.slug === event.slug).overlapIndex
+            }
+        }
+    })
+    console.log("end result ", eventsWithOverlap)
+
+    // return eventIndex;
+    return eventsWithOverlap
+}
+
+// we can store what other elements this overlaps with and use that to filter - inside the overlap function
+
+export function getNorwegianDate(isodate) {
+    const date = new Date(isodate);
+    const days = [
+        'søndag',
+        'mandag',
+        'tirsdag',
+        'onsdag',
+        'torsdag',
+        'fredag',
+        'lørdag',
+    ];
+    const months = [
+        'januar',
+        'februar',
+        'mars',
+        'april',
+        'mai',
+        'juni',
+        'juli',
+        'august',
+        'september',
+        'oktober',
+        'november',
+        'desember',
+    ];
+
+    const dayOfWeek = days[date.getUTCDay()];
+    const day = date.getUTCDate();
+    const month = months[date.getUTCMonth()];
+    const hours = date.getUTCHours().toString().padStart(2, "0");
+    const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+
+    return `${dayOfWeek}, ${day}. ${month} kl ${hours}.${minutes}`;
+}

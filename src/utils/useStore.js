@@ -7,7 +7,8 @@ import {
   getMultipleWeeks,
   getMultipleMonths,
   splitMultiWeeks,
-  findHowManyDays
+  findHowManyDays,
+  createOverlapIndexes
 } from '../helpers'
 import axios from 'axios'
 
@@ -60,11 +61,12 @@ export default function useStore() {
       })
       const EventsDataWithOverlap =
         splitMultiWeeks(
-          getOverlaps(
-            getMultipleMonths(
-              getMultipleWeeks(
-                sortEvents(CleansedEvents)
-              ))))
+          createOverlapIndexes(
+            getOverlaps(
+              getMultipleMonths(
+                getMultipleWeeks(
+                  sortEvents(CleansedEvents)
+                )))))
       console.log("cleaned events ", EventsDataWithOverlap)
       setCurrentEvents(EventsDataWithOverlap)
     }
