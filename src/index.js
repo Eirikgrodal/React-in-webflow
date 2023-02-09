@@ -217,8 +217,7 @@ const Event = ({ event }) => {
                     id="event-hover"
                     className='max-h-24 flex flex-col justify-center bottom-6 bg-gray-600 text-white border border-white rounded-lg px-[8px] py-[10px] text-left max-w-xs'>
                     <h3 className='truncate whitespace-nowrap font-bold text-md pb-1'>{event.name}</h3>
-                    <p className='whitespace-nowrap text-[0.7rem]'>fra: {getNorwegianDate(event.startDato)}</p>
-                    <p className='whitespace-nowrap text-[0.7rem]'>til: {getNorwegianDate(event.sluttDato)}</p>
+                    <DatoComponent event={event} />
                 </div>
             }
         </>
@@ -312,4 +311,50 @@ const MeetingList = () => {
             ))}
         </ol>
     )
+}
+
+// startDate, endDate, differentWeek = false, differentMonth = false
+const DatoComponent = ({ event }) => {
+    if (event.days > 1 && event.multipleWeeks > 0 || event.multipleMonths > 0) {
+        const time = getNorwegianDate({ startDate: event.startDato, endDate: event.sluttDato, differentWeek, differentMonth })
+        return (
+            <>
+                {time && time.map((t, i) => {
+                    return (
+                        <p className='whitespace-nowrap text-[0.7rem]' key={i} >{t}</p>
+                    )
+                })}
+            </>
+        )
+    }
+    else if (event.days === 1) {
+        const time = getNorwegianDate({ startDate: event.startDato })
+        return (
+            <p className='whitespace-nowrap text-[0.7rem]'>{time}</p>
+        )
+    }
+    else if (event.days > 1 && event.multipleWeeks === 0 && event.multipleMonths === 0) {
+        const time = getNorwegianDate({ startDate: event.startDato, endDate: event.sluttDato })
+        return (
+            <>
+                {time && time.map((t, i) => {
+                    return (
+                        <p className='whitespace-nowrap text-[0.7rem]' key={i} >{t}</p>
+                    )
+                })}
+            </>
+        )
+    }
+    else if (event.days > 1 && event.multipleWeeks > 0 && event.multipleMonths === 0) {
+        const time = getNorwegianDate({ startDate: event.startDato, endDate: event.sluttDato, differentWeek })
+        return (
+            <>
+                {time && time.map((t, i) => {
+                    return (
+                        <p className='whitespace-nowrap text-[0.7rem]' key={i} >{t}</p>
+                    )
+                })}
+            </>
+        )
+    } else return
 }

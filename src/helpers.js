@@ -319,8 +319,9 @@ export const createOverlapIndexes = (events) => {
 
 // we can store what other elements this overlaps with and use that to filter - inside the overlap function
 
-export function getNorwegianDate(isodate) {
-    const date = new Date(isodate);
+export function getNorwegianDate({ startDate, endDate, differentWeek = false, differentMonth = false }) {
+    const date = new Date(startDate);
+    const end = new Date(endDate);
     const days = [
         'søndag',
         'mandag',
@@ -350,6 +351,19 @@ export function getNorwegianDate(isodate) {
     const month = months[date.getUTCMonth()];
     const hours = date.getUTCHours().toString().padStart(2, "0");
     const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+    const dayOfWeek_end = days[end.getUTCDay()];
+    const day_end = end.getUTCDate();
+    const month_end = months[end.getUTCMonth()];
+    const hours_end = end.getUTCHours().toString().padStart(2, "0");
+    const minutes_end = end.getUTCMinutes().toString().padStart(2, "0");
 
-    return `${dayOfWeek}, ${day}. ${month} kl ${hours}.${minutes}`;
+    if (!endDate) {
+        return `${dayOfWeek}, ${day}. ${month} - kl ${hours}.${minutes}`;
+    } else if (differentWeek && !differentMonth) {
+        return [`fra: ${dayOfWeek}, ${day}. ${month} kl ${hours}.${minutes}`, `til: ${dayOfWeek_end}, ${day_end}. ${month_end} kl ${hours_end}.${minutes_end}`];
+    } else if (!differentMonth) {
+        return [`fra ${dayOfWeek} ${day}. ${month}`, `til ${dayOfWeek_end} ${day_end}. ${month_end}`];
+    } else {
+        return [`fra ${dayOfWeek} ${day}. ${month}`, `til ${dayOfWeek_end} ${day_end}. ${month_end}`];
+    }
 }
