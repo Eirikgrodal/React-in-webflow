@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 
-// todo: bruk den nye dataen til aa besteme hvis isSelected skal vaere true eller false
 export function getDaysInMonth(month, year) {
     const date = new Date(year, month, 1);
     const days = [];
@@ -21,7 +20,6 @@ export function getDayOfWeek(isoDate) {
     return date.getUTCDay(); // hvilken dag det er som et tall fra 0 til 6
 }
 
-// todo: bruk den nye dataen til aa besteme hvis isSelected skal vaere true eller false
 export function getPreviousWeekdays(isoDate) {
     const date = new Date(isoDate);
     console.log('iso ', isoDate)
@@ -40,7 +38,6 @@ export function getPreviousWeekdays(isoDate) {
     return weekdays.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());; // array med dager i ISO format
 }
 
-// todo: bruk den nye dataen til aa besteme hvis isSelected skal vaere true eller false - er dayOfWeek i den nye arrayen?
 export function getNextWeekdays(isoDate) {
     const date = new Date(isoDate);
     const dayOfWeek = getDayOfWeek(isoDate);
@@ -58,8 +55,6 @@ export function getNextWeekdays(isoDate) {
     return weekdays; // array med dager i ISO format
 }
 
-// todo: faa inn en array med alle selected datoer fra API-response 
-// todo: gi tilgang til getDaysInMonth, getPreviousWeekdays, getNextWeekdays til den dataen
 export function getCalenderDays(year, month, events) {
     const currentDays = getDaysInMonth(month, year, events);
     const previousDays = getPreviousWeekdays(currentDays[0].date, events)
@@ -71,7 +66,6 @@ export function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-// end: findGridIndex(event['slutt-dato'], currentEventsData, 'slutt-dato'),
 export const findStartIndex = (date, array) => {
     const day = getDayOfWeek(date)
     console.log("date ", date)
