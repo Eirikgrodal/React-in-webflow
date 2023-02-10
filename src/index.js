@@ -181,7 +181,7 @@ const Event = ({ event }) => {
                 className={classNames(
                     (event.squaredEnd && event.squaredStart) ? "w-[100%]"
                         : event.squaredEnd ? "justify-self-end w-[97%]" : "",
-                    event.days === 1 ? 'aspect-square' : '', // if event is longer than one day
+                    event.days === 1 ? 'aspect-square' : (event.days > 1 && !event.squaredEnd && !event.squaredStart) ? 'w-[90%]': "", // if event is longer than one day
                     event.overlaps > 0 ? "h-[80%]" : "h-[65%]",
                     (!event.squaredEnd && !event.squaredStart) ? 'justify-self-center' : '',
                 )}
