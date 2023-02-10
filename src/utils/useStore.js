@@ -55,6 +55,7 @@ export default function useStore() {
           startDato: event['start-dato'],
           sluttDato: event['slutt-dato'],
           squaredEnd: false,
+          color: event.color ?? undefined,
           squaredStart: false,
           overlaps: 0,
         }
@@ -81,6 +82,7 @@ export default function useStore() {
       try {
         const result = await axios(`https://vindel.vercel.app/api/events`);
         setEvents(result.data);
+        console.log('fersk data: ', result.data.items)
         setLoading(false);
       } catch (error) {
         setError(error);
