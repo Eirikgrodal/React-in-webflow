@@ -261,7 +261,31 @@ export const findHowManyDays = (startDato, sluttDato) => {
     return Math.ceil(differenceInDays) // return days
 };
 
-export const createOverlapIndexes = (events) => {
+// egentlig burde vi:
+// for hver event, sjekke om de den overlapper med er i tempEvents -- behold [i]
+// om de er i tempEvents så ((sjekk om det finnes bedre index)) - hvis ja så bytt index - hvis nei så legg til i [i] plass i tempEvents
+// gå gjennom alle verdier og kjør den samme prosessen fram til det ikke finner flere empty spots
+
+export const checkOverlaps = (event, events, currentIndex, tempEvents) => {
+    let j = currentIndex + 1
+    event.overlapsWith.forEach((overlapEvent_slug) => {
+        const overlapEvent = events.find((e) => e.slug === overlapEvent_slug)
+        const overlap_isAlreadyInTemp = tempEvents.some((e) => e.slug === overlapEvent_slug) // if the overlap event is not in tempEvents, we should add it
+        if (!overlap_isAlreadyInTemp) {
+            tempEvents.push(
+                {
+                    ...overlapEvent,
+                    overlapIndex: j,
+                }
+            )
+            j++
+        }
+    })
+}
+
+export const createOverlapIndexes = (event_array) => {
+    // const events = event_array.sort((a, b) => b.days - a.days)
+    const events = event_array
     const tempEvents = []
 
     const eventsWithOverlap = events.map((event) => {
@@ -272,24 +296,12 @@ export const createOverlapIndexes = (events) => {
                 ...event,
                 overlapIndex: 0
             }
-        } else {
-            let j = currentIndex + 1
-            event.overlapsWith.forEach((overlapEvent_slug) => {
-                const overlapEvent = events.find((e) => e.slug === overlapEvent_slug)
-                const isAlreadyInTemp_overlap = tempEvents.some((e) => e.slug === overlapEvent_slug) // if the overlap event is not in tempEvents, we should add it
-                if (!isAlreadyInTemp_overlap) {
-                    tempEvents.push(
-                        {
-                            ...overlapEvent,
-                            overlapIndex: j,
-                        }
-                    )
-                    j++
-                }
-            })
         }
         const isAlreadyinTemp_event = tempEvents.some((e) => e.slug === event.slug) // if the event is not in tempEvents, we should return it with the current index
         if (!isAlreadyinTemp_event) {
+            if (event.overlaps > 0) {
+                checkOverlaps(event, events, currentIndex, tempEvents)
+            }
             return (
                 {
                     ...event,
@@ -298,6 +310,9 @@ export const createOverlapIndexes = (events) => {
             )
         }
         else {
+            // if (event.overlaps > 0) {
+            //     checkOverlaps(event, events, currentIndex - 1, tempEvents)
+            // }
             return {                                                           // else return it with the index from tempEvents
                 ...event,
                 overlapIndex: tempEvents.find((e) => e.slug === event.slug).overlapIndex
@@ -308,6 +323,104 @@ export const createOverlapIndexes = (events) => {
     // return eventIndex;
     return eventsWithOverlap
 }
+
+
+
+// export function createOverlapIndexes(events) {
+//     // Sort events by their start time
+//     events.sort((a, b) => a.start - b.start);
+
+//     // Create an array to represent the bins
+//     const bins = [];
+
+//     // Iterate through the events
+//     for (const event of events) {
+//         let placed = false;
+
+//         // Try to place the event in an existing bin // try to set it in the first index
+//         for (const bin of bins) {
+//             if (event.start >= bin[bin.length - 1].end) {
+//                 bin.push(event);
+//                 placed = true;
+//                 break;
+//             }
+//         }
+
+//         // If the event couldn't be placed in the first index, create a new bin for it
+//         if (!placed) {
+//             bins.push([event]);
+//         }
+//     }
+//     return bins;
+// }
+
+// function checkIndexes(indexes) {
+//     let i = 1;
+//     while (i < indexes.length) {
+//         if (indexes[i] - indexes[i - 1] > 1) {
+//             indexes[i]--;
+//             i = 0;
+//         } else {
+//             i++;
+//         }
+//     }
+//     return indexes;
+// }
+
+// export function createOverlapIndexes(events) {
+//     const eventsWithId = events.map((event, index) => ({ ...event, id: index }))
+//     const newEvents = []
+
+//     eventsWithId.forEach((event) => {
+//         const tempNewEvents = []
+//         let temp = 0
+//         const _isEventInNewEvents = newEvents.some((e) => e.id === event.id)
+//         if (!_isEventInNewEvents) {
+//             console.log("new one", event)
+//             tempNewEvents.push({
+//                 ...event,
+//                 overlapIndex: 0
+//             })
+//         }
+//         event.overlapsWith.forEach((overlapEvent_id) => {
+//             const overlapEvent = eventsWithId.find((e) => e.id === overlapEvent_id)
+//             const _isOverlapInNewEvents = newEvents.some((e) => e.id === overlapEvent_id)
+//             if (!_isOverlapInNewEvents) {
+//                 console.log("new overlap: ", overlapEvent)
+//                 tempNewEvents.push({
+//                     ...overlapEvent,
+//                     overlapIndex: temp + 1
+//                 })
+//                 temp++
+//             } else {
+//                 console.log("overlap already in newEvents: ", overlapEvent)
+//                 tempNewEvents.push(overlapEvent)
+//             }
+//         })
+
+//         // cleaning
+//         const indexes = tempNewEvents.map((e) => e.overlapIndex)
+//         const jumps = checkIndexes(indexes)
+//         if (jumps.length > 0) {
+//             tempNewEvents.forEach((e, i) => {
+//                 e.overlapIndex = jumps[i]
+//             })
+//         }
+//         console.log("jumps: ", jumps)
+
+//         // combining tempNewEvents with newEvents
+//         tempNewEvents.forEach((e) => {
+//             const _isEventInNewEvents = newEvents.some((e) => e.id === event.id)
+//             if (!_isEventInNewEvents) {
+//                 newEvents.push(e)
+//             } else {
+//                 const index = newEvents.findIndex((e) => e.id === event.id)
+//                 newEvents[index] = e
+//             }
+//         })
+//     })
+//     return newEvents
+// }
 
 // we can store what other elements this overlaps with and use that to filter - inside the overlap function
 
