@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import {
   getCalenderDays,
-  findEndIndex,
-  sortEvents,
+  findDayIndex,
+  sortEventsByStart,
   getOverlaps,
   getMultipleWeeks,
   getMultipleMonths,
   splitMultiWeeks,
   findHowManyDays,
-  createOverlapIndexes
+  createOverlapIndexes,
+  createLayers
 } from '../helpers'
 import axios from 'axios'
 
@@ -49,8 +50,8 @@ export default function useStore() {
         return {
           name: event.name,
           slug: event.slug,
-          start: findEndIndex(event['start-dato'], calendarDates), // [rowID, colID] ex: [2, 3]
-          end: findEndIndex(event['slutt-dato'], calendarDates),   // [rowID, colID] ex: [2, 3]
+          start: findDayIndex(event['start-dato'], calendarDates), // [rowID, colID] ex: [2, 3]
+          end: findDayIndex(event['slutt-dato'], calendarDates),   // [rowID, colID] ex: [2, 3]
           days: findHowManyDays(event['start-dato'], event['slutt-dato']),            // ex: 1
           startDato: event['start-dato'],
           sluttDato: event['slutt-dato'],
@@ -62,15 +63,17 @@ export default function useStore() {
       })
       const EventsDataWithOverlap =
         splitMultiWeeks(
-          createOverlapIndexes(
+          createLayers(
+            // createOverlapIndexes(
             getOverlaps(
               getMultipleMonths(
                 getMultipleWeeks(
-                  sortEvents(CleansedEvents)
+                  sortEventsByStart(CleansedEvents)
                 )))))
       console.log("cleaned events ", EventsDataWithOverlap)
       setCurrentEvents(EventsDataWithOverlap)
     }
+    console.log("dates: ", calendarDates)
   }, [calendarDates, events])
 
   useEffect(() => {

@@ -21,10 +21,10 @@ export function getDayOfWeek(isoDate) {
 }
 
 export function getPreviousWeekdays(isoDate) {
-    const date = new Date(isoDate);
+    const date = new Date(isoDate); // the first date in the next month
     const dayOfWeek = getDayOfWeek(isoDate);
     const weekdays = [];
-    for (let i = dayOfWeek - 1; i >= 0; i--) {
+    for (let i = dayOfWeek - 1; i >= 1; i--) {
         const previousDate = new Date(date);
         previousDate.setDate(previousDate.getDate() - (dayOfWeek - i));
         weekdays.push({
@@ -41,7 +41,7 @@ export function getNextWeekdays(isoDate) {
     const date = new Date(isoDate);
     const dayOfWeek = getDayOfWeek(isoDate);
     const weekdays = [];
-    for (let i = dayOfWeek + 1; i < 7; i++) {
+    for (let i = dayOfWeek + 1; i <= 7; i++) {
         const nextDate = new Date(date);
         nextDate.setDate(nextDate.getDate() + (i - dayOfWeek));
         weekdays.push({
@@ -65,23 +65,16 @@ export function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-export const findStartIndex = (date, array) => {
+export const findDayIndex = (date, array) => {
     const day = getDayOfWeek(date)
-    const weekIndex = array.findIndex((e) => e['slutt-dato'] === date)
-    const week = Math.floor(weekIndex / 7)
-    const month = new Date(date).getMonth()
-    return [day, week, month]
-};
-
-export const findEndIndex = (date, array) => {
-    const day = getDayOfWeek(date)
+    console.log("day:",day)
     const dayIndex = array.findIndex((e) => e.date.slice(0, 10) === date.slice(0, 10))
     const weekIndex = Math.ceil(dayIndex / 7) - 1
     const month = new Date(date).getMonth()
     return [day, weekIndex, month]
 };
 
-export const sortEvents = (events) => {
+export const sortEventsByStart = (events) => {
     return events.sort((a, b) => {
         if (a.start[0] === b.start[0]) {
             return a.start[1] - b.start[1];
@@ -89,6 +82,10 @@ export const sortEvents = (events) => {
             return a.start[0] - b.start[0];
         }
     });
+}
+
+export const sortEventsByLength = (events) => {
+    return events.sort((a, b) => b.days - a.days)
 }
 
 export const getOverlaps = (events) => {
@@ -261,11 +258,6 @@ export const findHowManyDays = (startDato, sluttDato) => {
     return Math.ceil(differenceInDays) // return days
 };
 
-// egentlig burde vi:
-// for hver event, sjekke om de den overlapper med er i tempEvents -- behold [i]
-// om de er i tempEvents så ((sjekk om det finnes bedre index)) - hvis ja så bytt index - hvis nei så legg til i [i] plass i tempEvents
-// gå gjennom alle verdier og kjør den samme prosessen fram til det ikke finner flere empty spots
-
 export const checkOverlaps = (event, events, currentIndex, tempEvents) => {
     let j = currentIndex + 1
     event.overlapsWith.forEach((overlapEvent_slug) => {
@@ -324,105 +316,97 @@ export const createOverlapIndexes = (event_array) => {
     return eventsWithOverlap
 }
 
+export function createLayers(events) {
+    const sortedEvents = sortEventsByLength(events)
+    const _Events = sortedEvents.map((e) => ({ ...e, layer: null }))
+
+    const layer_results = createLayerIndex(_Events)
+
+    // create maxLayer - the maximum number of layers per day for each day
 
 
-// export function createOverlapIndexes(events) {
-//     // Sort events by their start time
-//     events.sort((a, b) => a.start - b.start);
+    // for each day in my event, find how many other events are on that day, and store the highest result
+    const results = createMaxLayer(layer_results)
 
-//     // Create an array to represent the bins
-//     const bins = [];
+    return results;
+}
 
-//     // Iterate through the events
-//     for (const event of events) {
-//         let placed = false;
+function createLayerIndex(_Events) {
+    const layer_results = _Events.map((event) => {
 
-//         // Try to place the event in an existing bin // try to set it in the first index
-//         for (const bin of bins) {
-//             if (event.start >= bin[bin.length - 1].end) {
-//                 bin.push(event);
-//                 placed = true;
-//                 break;
-//             }
-//         }
+        // finding all layers 
+        const compareEvents_layers = _Events.map((e) => {
+            if (event.overlapsWith.some((c) => c === e.slug)) return e.layer
+        }).filter((e) => e !== undefined)
 
-//         // If the event couldn't be placed in the first index, create a new bin for it
-//         if (!placed) {
-//             bins.push([event]);
-//         }
-//     }
-//     return bins;
-// }
+        const filteredLayers = compareEvents_layers.filter((e) => e !== null)
+        const ComparisonLength = filteredLayers.length
 
-// function checkIndexes(indexes) {
-//     let i = 1;
-//     while (i < indexes.length) {
-//         if (indexes[i] - indexes[i - 1] > 1) {
-//             indexes[i]--;
-//             i = 0;
-//         } else {
-//             i++;
-//         }
-//     }
-//     return indexes;
-// }
+        // // if no other layers
+        if (compareEvents_layers.filter((e) => e !== null).length === 0) {
+            _Events[_Events.findIndex((e) => e.slug === event.slug)].layer = 0 // also update sortEvents event
+            return {
+                ...event,
+                layer: 0
+            }
+        }
 
-// export function createOverlapIndexes(events) {
-//     const eventsWithId = events.map((event, index) => ({ ...event, id: index }))
-//     const newEvents = []
+        // if there are other layers - place in the best layer
+        else {
+            for (let i = 0; i < (ComparisonLength - 1); i++) {
+                if (!filteredLayers.includes(i)) {
+                    _Events[_Events.findIndex((e) => e.slug === event.slug)].layer = i // also update sortEvents event
+                    return {
+                        ...event,
+                        layer: i
+                    }
+                }
+            }
+            // if still not placed, create new layer
+            _Events[_Events.findIndex((e) => e.slug === event.slug)].layer = ComparisonLength // also update sortEvents event
+            return {
+                ...event,
+                layer: ComparisonLength
+            }
+        }
+    })
+    return layer_results
+}
 
-//     eventsWithId.forEach((event) => {
-//         const tempNewEvents = []
-//         let temp = 0
-//         const _isEventInNewEvents = newEvents.some((e) => e.id === event.id)
-//         if (!_isEventInNewEvents) {
-//             console.log("new one", event)
-//             tempNewEvents.push({
-//                 ...event,
-//                 overlapIndex: 0
-//             })
-//         }
-//         event.overlapsWith.forEach((overlapEvent_id) => {
-//             const overlapEvent = eventsWithId.find((e) => e.id === overlapEvent_id)
-//             const _isOverlapInNewEvents = newEvents.some((e) => e.id === overlapEvent_id)
-//             if (!_isOverlapInNewEvents) {
-//                 console.log("new overlap: ", overlapEvent)
-//                 tempNewEvents.push({
-//                     ...overlapEvent,
-//                     overlapIndex: temp + 1
-//                 })
-//                 temp++
-//             } else {
-//                 console.log("overlap already in newEvents: ", overlapEvent)
-//                 tempNewEvents.push(overlapEvent)
-//             }
-//         })
+function createMaxLayer(layer_results) {
+    const eventsDays = layer_results.map((e) => { return { week: e, days: getDaysBetween(e.start, e.end) } }) // a reference array of all the days for each event
+    const results = layer_results.map((result, index) => {
+        let maxLayer = 0
 
-//         // cleaning
-//         const indexes = tempNewEvents.map((e) => e.overlapIndex)
-//         const jumps = checkIndexes(indexes)
-//         if (jumps.length > 0) {
-//             tempNewEvents.forEach((e, i) => {
-//                 e.overlapIndex = jumps[i]
-//             })
-//         }
-//         console.log("jumps: ", jumps)
+        const myDays = getDaysBetween(result.start, result.end)
 
-//         // combining tempNewEvents with newEvents
-//         tempNewEvents.forEach((e) => {
-//             const _isEventInNewEvents = newEvents.some((e) => e.id === event.id)
-//             if (!_isEventInNewEvents) {
-//                 newEvents.push(e)
-//             } else {
-//                 const index = newEvents.findIndex((e) => e.id === event.id)
-//                 newEvents[index] = e
-//             }
-//         })
-//     })
-//     return newEvents
-// }
+        myDays.forEach((day) => { // for each day of mine
+            let dayMax = 0
 
-// we can store what other elements this overlaps with and use that to filter - inside the overlap function
+            result.overlapsWith.forEach((this_overlap) => { // for each slug it overlaps with
+                // .week: full obj of overlap event
+                // .days: all days of overlap event
+                const overlapEvent = eventsDays.find((e) => e.week.slug === this_overlap)
+
+                // check if on the day in question, if that event overlaps with the current event
+                const isOverlapping = overlapEvent.days.some((d) => d.toString() === day.toString())
+
+                // if it does, increment the count for that day in my event - else continue
+                if (isOverlapping === true) {
+                    dayMax++
+                }
+            })
+            maxLayer = Math.max(maxLayer, dayMax)
+        })
+
+        return {
+            ...result,
+            maxLayer: maxLayer
+        }
+    })
+    return results
+}
+
 
 export function getNorwegianDate({ startDate, endDate, differentWeek = false, differentMonth = false }) {
     const date = new Date(startDate);

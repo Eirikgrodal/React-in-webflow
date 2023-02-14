@@ -25,10 +25,6 @@ const App = () => {
     } = useStore()
 
     return (
-        // <div className='w-full flex justify-center'>
-        //     <div className='container'>
-        //         <h2 className="text-lg font-semibold text-gray-900">Upcoming meetings</h2>
-        // <div className="lg:grid lg:grid-cols-12 lg:gap-x-16">
         <div className="mt-10 text-center lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9 max-w-lg mx-auto">
             <div className="flex flex-col items-center text-gray-900">
                 <div className='flex flex-row w-full'>
@@ -50,11 +46,9 @@ const App = () => {
                     >
                         <span className="sr-only" >Next month</span>
                         {'>'}
-                        {/*husk at du kan bruke month index */}
 
                     </button>
                 </div>
-                {/* dager i uka */}
                 <div className="w-full mt-6 grid grid-cols-7 text-xs leading-6 text-gray-500">
                     <div>M</div>
                     <div>T</div>
@@ -64,7 +58,6 @@ const App = () => {
                     <div>L</div>
                     <div>S</div>
                 </div>
-                {/* selve grid */}
                 <div className='isolate w-full relative'>
                     <div className="relative z-0 isolate w-full mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
                         {calendarDates && calendarDates.map((day, dayIdx) => (
@@ -83,7 +76,6 @@ const App = () => {
                                     dayIdx === 6 && 'rounded-tr-lg',
                                     dayIdx === calendarDates.length - 7 && 'rounded-bl-lg',
                                     dayIdx === calendarDates.length - 1 && 'rounded-br-lg',
-                                    // 'h-14'
                                 )}
                                 onClick={() => setSelectedDate(day.date)}
                             >
@@ -96,6 +88,7 @@ const App = () => {
                                     )}
                                 >
                                     {new Date(new Date(day.date).setDate(new Date(day.date).getDate() - 1)).getDate()}
+                                    {/* {new Date(day.date).getDate()} */}
                                 </time>
                             </button>
                         ))}
@@ -117,18 +110,14 @@ const App = () => {
                     </div>
                 </div>
                 {/* <button
-                                type="button"
-                                className="mt-8 w-full rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                            >
-                                Add event
-                            </button> */}
+                    type="button"
+                    className="mt-8 w-full rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                    Add event
+                </button> */}
             </div>
 
         </div>
-
-        // </div>
-        //     </div>
-        // </div >
     )
 }
 
@@ -136,6 +125,94 @@ ReactDOM.render(
     React.createElement(App, {}, null),
     document.getElementById('react-target')
 );
+
+// const Event = ({ event }) => {
+//     const [hover, setHover] = useState(false)
+//     const [loaded, setLoaded] = useState(false)
+//     const [mobileClicked, setMobileClicked] = useState(false)
+//     useEffect(() => { setLoaded(true) }, [])
+
+//     const handleHover = (isHovered) => {
+//         setHover(isHovered);
+//         if (isHovered) {
+//             const mousePosition = getMousePosition();
+//             setHoverPosition({ x: mousePosition.x - 100, y: mousePosition.y - 120 });
+//         }
+//     };
+
+//     const handleClick = () => {
+//         if (loaded && window.innerWidth < 1025 && !mobileClicked) {
+//             setHover(true)
+//             setMobileClicked(true)
+//         } else {
+//             window.location.assign("https://www.vindel.no/hva-skjer/" + event.slug)
+//             setMobileClicked(false)
+//         }
+//     }
+//     const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
+
+//     const getMousePosition = () => {
+//         return { x: window.event.clientX, y: window.event.clientY };
+//     };
+//     addEventListener('mousemove', (event) => { getMousePosition() });
+//     return (
+//         <>
+//             <div
+//                 id="event"
+//                 style={{
+//                     gridRow: `${event.start[1] + 1}/ ${event.end[1] + 2}`, // hvor høyt
+//                     gridColumn: `${event.start[0] + 1} / ${event.end[0] + 2}`, // hvor bredt
+//                     display: "grid",
+//                     gap: "1.5px",
+//                     gridTemplateColumns: "repeat(1,1fr)",
+//                     gridTemplateRows: `repeat(${(event.days === 1 && event.overlaps === 0) ? 1 : event.overlapMax + 1}, 1fr)` // hvor mange rader
+//                 }}
+//                 className={classNames(
+//                     (event.squaredEnd && event.squaredStart) ? "w-[100%]"
+//                         : event.squaredEnd ? "justify-self-end w-[97%]" : "",
+//                     event.days === 1 ? 'aspect-square' : (event.days > 1 && !event.squaredEnd && !event.squaredStart) ? 'w-[90%]' : "", // if event is longer than one day
+//                     event.overlaps > 0 ? "h-[80%]" : "h-[65%]",
+//                     (!event.squaredEnd && !event.squaredStart) ? 'justify-self-center' : '',
+//                 )}
+//             >
+//                 <div
+//                     style={{
+//                         gridRow: `${event.overlapIndex + 1}`,
+//                         backgroundColor: event.color ?? "gray",
+//                     }}
+//                     onMouseEnter={() => { handleHover(true) }}
+//                     onMouseLeave={() => { handleHover(false) }}
+//                     onClick={() => { handleClick() }}
+//                     className={classNames(
+//                         (event.squaredEnd && event.squaredStart) ? "" :
+//                             event.squaredEnd ? "rounded-l-full" :
+//                                 event.squaredStart ? "rounded-r-full" : "rounded-full",
+//                         hover ? "opacity-60" : "opacity-100",
+//                         "opacity-90 relative z-1 cursor-pointer",
+//                     )}>
+
+
+//                 </div>
+//             </div>
+//             {hover &&
+//                 <div
+//                     style={{
+//                         position: 'fixed',
+//                         top: hoverPosition.y,
+//                         left: hoverPosition.x,
+//                         zIndex: 9999,
+//                         cursorEvents: loaded && window.innerWidth > 1025 ? 'none' : 'auto'
+//                     }}
+//                     onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + event.slug) }}
+//                     id="event-hover"
+//                     className='max-h-24 flex flex-col justify-center bottom-6 bg-gray-600 text-white border border-white rounded-lg px-[8px] py-[10px] text-left max-w-xs'>
+//                     <h3 className='truncate whitespace-nowrap font-bold text-md pb-1'>{event.name}</h3>
+//                     <DatoComponent event={event} />
+//                 </div>
+//             }
+//         </>
+//     )
+// }
 
 const Event = ({ event }) => {
     const [hover, setHover] = useState(false)
@@ -176,19 +253,19 @@ const Event = ({ event }) => {
                     display: "grid",
                     gap: "1.5px",
                     gridTemplateColumns: "repeat(1,1fr)",
-                    gridTemplateRows: `repeat(${(event.days === 1 && event.overlaps === 0) ? 1 : event.overlapMax + 1}, 1fr)` // hvor mange rader
+                    gridTemplateRows: `repeat(${(event.days === 1 && event.overlapsWith.length === 0) ? 1 : event.maxLayer + 1}, 1fr)` // hvor mange rader
                 }}
                 className={classNames(
                     (event.squaredEnd && event.squaredStart) ? "w-[100%]"
                         : event.squaredEnd ? "justify-self-end w-[97%]" : "",
-                    event.days === 1 ? 'aspect-square' : (event.days > 1 && !event.squaredEnd && !event.squaredStart) ? 'w-[90%]': "", // if event is longer than one day
+                    event.days === 1 ? 'aspect-square' : (event.days > 1 && !event.squaredEnd && !event.squaredStart) ? 'w-[90%]' : "", // if event is longer than one day
                     event.overlaps > 0 ? "h-[80%]" : "h-[65%]",
                     (!event.squaredEnd && !event.squaredStart) ? 'justify-self-center' : '',
                 )}
             >
                 <div
                     style={{
-                        gridRow: `${event.overlapIndex + 1}`,
+                        gridRow: `${event.layer + 1}`,
                         backgroundColor: event.color ?? "gray",
                     }}
                     onMouseEnter={() => { handleHover(true) }}
@@ -211,7 +288,8 @@ const Event = ({ event }) => {
                         position: 'fixed',
                         top: hoverPosition.y,
                         left: hoverPosition.x,
-                        zIndex: 9999
+                        zIndex: 9999,
+                        cursorEvents: loaded && window.innerWidth > 1025 ? 'none' : 'auto'
                     }}
                     onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + event.slug) }}
                     id="event-hover"
@@ -222,6 +300,50 @@ const Event = ({ event }) => {
             }
         </>
     )
+}
+const DatoComponent = ({ event }) => {
+    if (event.days > 1 && event.multipleWeeks > 0 || event.multipleMonths > 0) {
+        const time = getNorwegianDate({ startDate: event.startDato, endDate: event.sluttDato, differentWeek, differentMonth })
+        return (
+            <>
+                {time && time.map((t, i) => {
+                    return (
+                        <p className='whitespace-nowrap text-[0.7rem]' key={i} >{t}</p>
+                    )
+                })}
+            </>
+        )
+    }
+    else if (event.days === 1) {
+        const time = getNorwegianDate({ startDate: event.startDato })
+        return (
+            <p className='whitespace-nowrap text-[0.7rem]'>{time}</p>
+        )
+    }
+    else if (event.days > 1 && event.multipleWeeks === 0 && event.multipleMonths === 0) {
+        const time = getNorwegianDate({ startDate: event.startDato, endDate: event.sluttDato })
+        return (
+            <>
+                {time && time.map((t, i) => {
+                    return (
+                        <p className='whitespace-nowrap text-[0.7rem]' key={i} >{t}</p>
+                    )
+                })}
+            </>
+        )
+    }
+    else if (event.days > 1 && event.multipleWeeks > 0 && event.multipleMonths === 0) {
+        const time = getNorwegianDate({ startDate: event.startDato, endDate: event.sluttDato, differentWeek })
+        return (
+            <>
+                {time && time.map((t, i) => {
+                    return (
+                        <p className='whitespace-nowrap text-[0.7rem]' key={i} >{t}</p>
+                    )
+                })}
+            </>
+        )
+    } else return
 }
 
 const MeetingList = () => {
@@ -311,50 +433,4 @@ const MeetingList = () => {
             ))}
         </ol>
     )
-}
-
-// startDate, endDate, differentWeek = false, differentMonth = false
-const DatoComponent = ({ event }) => {
-    if (event.days > 1 && event.multipleWeeks > 0 || event.multipleMonths > 0) {
-        const time = getNorwegianDate({ startDate: event.startDato, endDate: event.sluttDato, differentWeek, differentMonth })
-        return (
-            <>
-                {time && time.map((t, i) => {
-                    return (
-                        <p className='whitespace-nowrap text-[0.7rem]' key={i} >{t}</p>
-                    )
-                })}
-            </>
-        )
-    }
-    else if (event.days === 1) {
-        const time = getNorwegianDate({ startDate: event.startDato })
-        return (
-            <p className='whitespace-nowrap text-[0.7rem]'>{time}</p>
-        )
-    }
-    else if (event.days > 1 && event.multipleWeeks === 0 && event.multipleMonths === 0) {
-        const time = getNorwegianDate({ startDate: event.startDato, endDate: event.sluttDato })
-        return (
-            <>
-                {time && time.map((t, i) => {
-                    return (
-                        <p className='whitespace-nowrap text-[0.7rem]' key={i} >{t}</p>
-                    )
-                })}
-            </>
-        )
-    }
-    else if (event.days > 1 && event.multipleWeeks > 0 && event.multipleMonths === 0) {
-        const time = getNorwegianDate({ startDate: event.startDato, endDate: event.sluttDato, differentWeek })
-        return (
-            <>
-                {time && time.map((t, i) => {
-                    return (
-                        <p className='whitespace-nowrap text-[0.7rem]' key={i} >{t}</p>
-                    )
-                })}
-            </>
-        )
-    } else return
 }
