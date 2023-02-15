@@ -17,14 +17,16 @@ export function getDaysInMonth(month, year) {
 
 export function getDayOfWeek(isoDate) {
     const date = new Date(isoDate);
-    return date.getUTCDay(); // hvilken dag det er som et tall fra 0 til 6
+    const USday = date.getDay(); // hvilken dag det er som et tall fra 0 til 6
+    return (USday - 1 + 6) % 7
 }
 
 export function getPreviousWeekdays(isoDate) {
     const date = new Date(isoDate); // the first date in the next month
     const dayOfWeek = getDayOfWeek(isoDate);
     const weekdays = [];
-    for (let i = dayOfWeek - 1; i >= 1; i--) {
+
+    for (let i = dayOfWeek - 1; i >= 0; i--) {
         const previousDate = new Date(date);
         previousDate.setDate(previousDate.getDate() - (dayOfWeek - i));
         weekdays.push({
@@ -40,8 +42,9 @@ export function getPreviousWeekdays(isoDate) {
 export function getNextWeekdays(isoDate) {
     const date = new Date(isoDate);
     const dayOfWeek = getDayOfWeek(isoDate);
+
     const weekdays = [];
-    for (let i = dayOfWeek + 1; i <= 7; i++) {
+    for (let i = dayOfWeek + 1; i <= 6; i++) {
         const nextDate = new Date(date);
         nextDate.setDate(nextDate.getDate() + (i - dayOfWeek));
         weekdays.push({
@@ -56,8 +59,8 @@ export function getNextWeekdays(isoDate) {
 
 export function getCalenderDays(year, month, events) {
     const currentDays = getDaysInMonth(month, year, events);
-    const previousDays = getPreviousWeekdays(currentDays[0].date, events)
-    const nextDays = getNextWeekdays(currentDays.at(-1).date, events)
+    const previousDays = getPreviousWeekdays(currentDays[0].date)
+    const nextDays = getNextWeekdays(currentDays.at(-1).date)
     return [...previousDays, ...currentDays, ...nextDays] // array med dager i ISO format
 }
 
@@ -65,14 +68,43 @@ export function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-export const findDayIndex = (date, array) => {
-    const day = getDayOfWeek(date)
-    console.log("day:",day)
-    const dayIndex = array.findIndex((e) => e.date.slice(0, 10) === date.slice(0, 10))
-    const weekIndex = Math.ceil(dayIndex / 7) - 1
-    const month = new Date(date).getMonth()
-    return [day, weekIndex, month]
-};
+export const findFirstDayIndex = (isoDate) => {
+    const date = new Date(isoDate);
+    const month = date.getMonth();
+    const year = date.getFullYear();
+
+    // Calculate the day index (0 for Sunday, 1 for Monday, etc.)
+    const dayIndex = (date.getDay() + 6) % 7;
+
+    // Calculate the week index
+    const firstDayOfMonth = (new Date(year, month, 1).getDay() - 1 + 6) % 7;
+    console.log('firstday', firstDayOfMonth)
+    const dayOfMonth = date.getDate();
+    const isInTheSameWeek = (7 - firstDayOfMonth) > dayOfMonth
+    let index
+    if (isInTheSameWeek) {
+        index = 0;
+    } else {
+        const daysLeftInFirstWeek = 7 - firstDayOfMonth
+        const daysLeftAfterFirstWeek = dayOfMonth - daysLeftInFirstWeek
+        console.log('daysLeftInFirstWeek', daysLeftInFirstWeek)
+        console.log('daysLeftAfterFirstWeek', daysLeftAfterFirstWeek)
+        index = Math.floor((7 + daysLeftAfterFirstWeek) / 7)
+    }
+    console.log('index', index)
+
+    // // If the first day of the month is a Sunday, and the date is in the first week,
+    // // the week index should be 0, not 1
+    // if (firstDayOfMonth === 0 && dayOfMonth <= 7) {
+    //     index = 0;
+    // }
+
+    // Calculate the month index (0 for January, 1 for February, etc.)
+    const monthIndex = month;
+
+    // Return the result as an array
+    return [dayIndex, index, monthIndex];
+}
 
 export const sortEventsByStart = (events) => {
     return events.sort((a, b) => {
@@ -176,8 +208,8 @@ export function splitMultiWeeks(currentEventsData) {
 
     currentEventsData.map((event) => {
         if (event.multipleWeeks > 0 || event.multipleMonths > 0) {
+            console.log("splitting event", event)
             const newEventsArray = [];
-            // todo - create a new event for every week returned here
             const newDatesArray = splitMultiWeeksWithMonthChange(event.start, event.end)
             newDatesArray[0].map((week) => {
                 const isLastItem = newDatesArray[0][newDatesArray[0].length - 1].toString() === week.toString()

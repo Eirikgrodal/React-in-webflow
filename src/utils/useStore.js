@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   getCalenderDays,
-  findDayIndex,
+  findFirstDayIndex,
   sortEventsByStart,
   getOverlaps,
   getMultipleWeeks,
@@ -50,8 +50,8 @@ export default function useStore() {
         return {
           name: event.name,
           slug: event.slug,
-          start: findDayIndex(event['start-dato'], calendarDates), // [rowID, colID] ex: [2, 3]
-          end: findDayIndex(event['slutt-dato'], calendarDates),   // [rowID, colID] ex: [2, 3]
+          start: findFirstDayIndex(event['start-dato'], calendarDates), // [rowID, colID] ex: [2, 3]
+          end: findFirstDayIndex(event['slutt-dato'], calendarDates),   // [rowID, colID] ex: [2, 3]
           days: findHowManyDays(event['start-dato'], event['slutt-dato']),            // ex: 1
           startDato: event['start-dato'],
           sluttDato: event['slutt-dato'],

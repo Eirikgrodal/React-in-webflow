@@ -58,63 +58,59 @@ const App = () => {
                     <div>L</div>
                     <div>S</div>
                 </div>
-                <div className='isolate w-full relative'>
-                    <div className="relative z-0 isolate w-full mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
-                        {calendarDates && calendarDates.map((day, dayIdx) => (
-                            <button
-                                key={day.date}
-                                type="button"
-                                className={classNames(
-                                    'py-3 hover:bg-gray-100 focus:z-10',
-                                    day.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
-                                    (day.isSelected || day.isToday) && 'font-semibold',
-                                    day.isSelected && 'text-white',
-                                    !day.isSelected && day.isCurrentMonth && !day.isToday && 'text-gray-900',
-                                    !day.isSelected && !day.isCurrentMonth && !day.isToday && 'text-gray-400',
-                                    day.isToday && !day.isSelected && 'text-indigo-600',
-                                    dayIdx === 0 && 'rounded-tl-lg',
-                                    dayIdx === 6 && 'rounded-tr-lg',
-                                    dayIdx === calendarDates.length - 7 && 'rounded-bl-lg',
-                                    dayIdx === calendarDates.length - 1 && 'rounded-br-lg',
-                                )}
-                                onClick={() => setSelectedDate(day.date)}
-                            >
-                                <time
-                                    dateTime={day.date}
+                {calendarDates && (
+                    <div className='isolate w-full relative'>
+                        <div className="relative z-0 isolate w-full mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
+                            {calendarDates && calendarDates.map((day, dayIdx) => (
+                                <button
+                                    key={day.date}
+                                    type="button"
                                     className={classNames(
-                                        'mx-auto flex h-7 w-7 items-center justify-center rounded-full',
-                                        day.isSelected && day.isToday && 'bg-indigo-600',
-                                        day.isSelected && !day.isToday && 'bg-gray-900'
+                                        'py-3 hover:bg-gray-100 focus:z-10',
+                                        day.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
+                                        (day.isSelected || day.isToday) && 'font-semibold',
+                                        day.isSelected && 'text-white',
+                                        !day.isSelected && day.isCurrentMonth && !day.isToday && 'text-gray-900',
+                                        !day.isSelected && !day.isCurrentMonth && !day.isToday && 'text-gray-400',
+                                        day.isToday && !day.isSelected && 'text-indigo-600',
+                                        dayIdx === 0 && 'rounded-tl-lg',
+                                        dayIdx === 6 && 'rounded-tr-lg',
+                                        dayIdx === calendarDates.length - 7 && 'rounded-bl-lg',
+                                        dayIdx === calendarDates.length - 1 && 'rounded-br-lg',
                                     )}
+                                    onClick={() => setSelectedDate(day.date)}
                                 >
-                                    {new Date(new Date(day.date).setDate(new Date(day.date).getDate() - 1)).getDate()}
-                                    {/* {new Date(day.date).getDate()} */}
-                                </time>
-                            </button>
-                        ))}
+                                    <time
+                                        dateTime={day.date}
+                                        className={classNames(
+                                            'mx-auto flex h-7 w-7 items-center justify-center rounded-full',
+                                            day.isSelected && day.isToday && 'bg-indigo-600',
+                                            day.isSelected && !day.isToday && 'bg-gray-900'
+                                        )}
+                                    >
+                                        {new Date(new Date(day.date).setDate(new Date(day.date).getDate() - 1)).getDate()}
+                                    </time>
+                                </button>
+                            ))}
+                        </div>
+                        <div className={classNames(
+                            "absolute z-10 top-0 bottom-0 left-0 right-0 h-full isolate w-full",
+                            "mt-2 pb-2 gap-px rounded-lg bg-transparent text-sm"
+                        )}
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(7, 1fr)",
+                                gridTemplateRows: `repeat(${Math.ceil(calendarDates.length / 7)}, 1fr)`,
+                                alignItems: "center"
+                            }}
+                        >
+                            {currentEvents && currentEvents.map((event, eventIdx) => (
+                                <Event event={event} conditions={true} key={eventIdx} />
+                            ))}
+                        </div>
                     </div>
-                    <div className={classNames(
-                        "absolute z-10 top-0 bottom-0 left-0 right-0 h-full isolate w-full",
-                        "mt-2 pb-2 gap-px rounded-lg bg-transparent text-sm"
-                    )}
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(7, 1fr)",
-                            gridTemplateRows: `repeat(${calendarDates?.length / 7 ?? 5}, 1fr)`,
-                            alignItems: "center"
-                        }}
-                    >
-                        {currentEvents && currentEvents.map((event, eventIdx) => (
-                            <Event event={event} conditions={true} key={eventIdx} />
-                        ))}
-                    </div>
-                </div>
-                {/* <button
-                    type="button"
-                    className="mt-8 w-full rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                    Add event
-                </button> */}
+                )}
+
             </div>
 
         </div>
@@ -250,37 +246,47 @@ const Event = ({ event }) => {
                 style={{
                     gridRow: `${event.start[1] + 1}/ ${event.end[1] + 2}`, // hvor høyt
                     gridColumn: `${event.start[0] + 1} / ${event.end[0] + 2}`, // hvor bredt
-                    display: "grid",
-                    gap: "1.5px",
-                    gridTemplateColumns: "repeat(1,1fr)",
-                    gridTemplateRows: `repeat(${(event.days === 1 && event.overlapsWith.length === 0) ? 1 : event.maxLayer + 1}, 1fr)` // hvor mange rader
                 }}
-                className={classNames(
-                    (event.squaredEnd && event.squaredStart) ? "w-[100%]"
-                        : event.squaredEnd ? "justify-self-end w-[97%]" : "",
-                    event.days === 1 ? 'aspect-square' : (event.days > 1 && !event.squaredEnd && !event.squaredStart) ? 'w-[90%]' : "", // if event is longer than one day
-                    event.overlaps > 0 ? "h-[80%]" : "h-[65%]",
-                    (!event.squaredEnd && !event.squaredStart) ? 'justify-self-center' : '',
-                )}
+                className="h-[3.25rem] w-full grid items-center"
             >
                 <div
                     style={{
-                        gridRow: `${event.layer + 1}`,
-                        backgroundColor: event.color ?? "gray",
+                        display: "grid",
+                        gap: "1.5px",
+                        gridTemplateColumns: "repeat(1,1fr)",
+                        gridTemplateRows: `repeat(${(event.days === 1 && event.overlapsWith.length === 0) ? 1 : event.maxLayer + 1}, 1fr)` // hvor mange rader
                     }}
-                    onMouseEnter={() => { handleHover(true) }}
-                    onMouseLeave={() => { handleHover(false) }}
-                    onClick={() => { handleClick() }}
                     className={classNames(
-                        (event.squaredEnd && event.squaredStart) ? "" :
-                            event.squaredEnd ? "rounded-l-full" :
-                                event.squaredStart ? "rounded-r-full" : "rounded-full",
-                        hover ? "opacity-60" : "opacity-100",
-                        "opacity-90 relative z-1 cursor-pointer",
-                    )}>
+                        (event.squaredEnd && event.squaredStart) ? ""                                               // event is in the middle of multi-day
+                            : event.squaredEnd ? "pl-[5%]"                                                          // event is in the end of multi-day
+                                : event.squaredStart ? "pl-0 pr-[5%]" : "",                             // event is in the start of multi-day
+                        (event.days === 1 && event.maxLayer === 0) ? 'aspect-square'                                // event has no overlaps and is only one day
+                            : (event.days === 1 && event.maxLayer > 0) ? 'px-3'                                     // event has overlaps and is only one day
+                                : (event.days > 1 && !event.squaredEnd && !event.squaredStart) ? 'w-[90%]' : "",    // if event is longer than one day
+                        event.maxLayer > 0 ? "h-[80%]" : "h-[65%]",
+                        (!event.squaredEnd && !event.squaredStart && event.maxLayer === 0) ? 'place-self-center' : '',
+                    )}
+                >
+                    <div
+                        style={{
+                            gridRow: `${event.layer + 1}`,
+                            backgroundColor: event.color ?? "gray",
+                        }}
+                        onMouseEnter={() => { handleHover(true) }}
+                        onMouseLeave={() => { handleHover(false) }}
+                        onClick={() => { handleClick() }}
+                        className={classNames(
+                            (event.squaredEnd && event.squaredStart) ? "" :
+                                event.squaredEnd ? "rounded-l-full" :
+                                    event.squaredStart ? "rounded-r-full" : "rounded-full",
+                            hover ? "opacity-60" : "opacity-100",
+                            "opacity-90 relative z-1 cursor-pointer",
+                        )}>
 
 
+                    </div>
                 </div>
+
             </div>
             {hover &&
                 <div
