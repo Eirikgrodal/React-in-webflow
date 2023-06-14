@@ -8,7 +8,7 @@ export function getDaysInMonth(month, year) {
         days.push({
             date: new Date(date).toISOString(),
             isCurrentMonth: true,
-            isToday: date.toDateString() === new Date().toDateString(),
+            isToday: date.toLocaleDateString() === new Date().toLocaleDateString(),
             isSelected: false
         });
     }
