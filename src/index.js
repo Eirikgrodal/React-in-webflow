@@ -125,7 +125,7 @@ const App = ({ event, meeting }) => {
 
     const handleClearFilter = () => {
         setVisibleClearButton(false);
-        setMeetings(events.items.slice(0, visibleMeetings));
+        setMeetings(events.items.slice(0, visibleMeetings ));
         // Reset any other filter-related state variables if needed
     };
 
