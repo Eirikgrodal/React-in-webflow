@@ -4,6 +4,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import {
     classNames,
     getDayAndTime,
+    getDateAndTime,
     getNorwegianMonthName,
     getNorwegianDate
 } from './helpers'
@@ -26,9 +27,6 @@ const App = ({ event, meeting }) => {
         prevMonth
     } = useStore()
 
-    console.log("meetings", meetings)
-
-    console.log("calender dates", calendarDates)
 
     const [visibleClearButton, setVisibleClearButton] = useState(false);
     const [visibleMeetings, setVisibleMeetings] = useState(3);
@@ -150,11 +148,11 @@ const App = ({ event, meeting }) => {
         if (loaded && window.innerWidth < 1025 && !mobileClicked) {
             setHover(true)
             setMobileClicked(true)
-            console.log("clicked mobile")
+            
         } else {
             window.location.assign("https://www.vindel.no/hva-skjer/" + event?.slug)
             setMobileClicked(false)
-            console.log("clicked desktop")
+            
         }
     }
     const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
@@ -188,10 +186,10 @@ const App = ({ event, meeting }) => {
                                                 </dt>
                                                 <dd className='ml-0 text-lg'>
                                                     <time dateTime={meeting['start-dato']}>
-                                                        {'fra ' + getDayAndTime(meeting['start-dato'])}
+                                                        {'fra ' + getDateAndTime(meeting['start-dato'])}
                                                     </time>
                                                     <time dateTime={meeting['start-dato']}>
-                                                        {' - ' + getDayAndTime(meeting['slutt-dato'])}
+                                                        {' - ' + getDateAndTime(meeting['slutt-dato'])}
                                                     </time>
                                                 </dd>
                                             </div>
@@ -507,11 +505,11 @@ const Event = ({ event }) => {
         if (loaded && window.innerWidth < 1025 && !mobileClicked) {
             setHover(true)
             setMobileClicked(true)
-            console.log("clicked mobile")
+            
         } else {
             window.location.assign("https://www.vindel.no/hva-skjer/" + event.slug)
             setMobileClicked(false)
-            console.log("clicked desktop")
+            
         }
     }
     const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });

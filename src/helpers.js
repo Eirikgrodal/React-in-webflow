@@ -78,7 +78,7 @@ export const findFirstDayIndex = (isoDate) => {
 
     // Calculate the week index
     const firstDayOfMonth = (new Date(year, month, 1).getDay() - 1 + 6) % 7;
-    console.log('firstday', firstDayOfMonth)
+
     const dayOfMonth = date.getDate();
     const isInTheSameWeek = (7 - firstDayOfMonth) > dayOfMonth
     let index
@@ -87,11 +87,10 @@ export const findFirstDayIndex = (isoDate) => {
     } else {
         const daysLeftInFirstWeek = 7 - firstDayOfMonth
         const daysLeftAfterFirstWeek = dayOfMonth - daysLeftInFirstWeek
-        console.log('daysLeftInFirstWeek', daysLeftInFirstWeek)
-        console.log('daysLeftAfterFirstWeek', daysLeftAfterFirstWeek)
+
         index = Math.floor((7 + daysLeftAfterFirstWeek) / 7)
     }
-    console.log('index', index)
+    
 
     // // If the first day of the month is a Sunday, and the date is in the first week,
     // // the week index should be 0, not 1
@@ -208,7 +207,7 @@ export function splitMultiWeeks(currentEventsData) {
 
     currentEventsData.map((event) => {
         if (event.multipleWeeks > 0 || event.multipleMonths > 0) {
-            console.log("splitting event", event)
+            
             const newEventsArray = [];
             const newDatesArray = splitMultiWeeksWithMonthChange(event.start, event.end)
             newDatesArray[0].map((week) => {
@@ -271,6 +270,13 @@ export function getDayAndTime(date) {
     const options = { weekday: 'long', hour: 'numeric', minute: 'numeric' };
     return dateObject.toLocaleString('no-NO', options);
 }
+
+export function getDateAndTime(date) {
+    const dateObject = new Date(date);
+    const options = { day: 'numeric', month: 'long', hour: 'numeric', minute: 'numeric' };
+    return dateObject.toLocaleString('no-NO', options);
+}
+
 
 export function getNorwegianMonthName(monthIndex) {
     const norwegianMonthNames = [

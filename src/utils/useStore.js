@@ -70,10 +70,10 @@ export default function useStore() {
                 getMultipleWeeks(
                   sortEventsByStart(CleansedEvents)
                 )))))
-      console.log("cleaned events ", EventsDataWithOverlap)
+      
       setCurrentEvents(EventsDataWithOverlap)
     }
-    console.log("dates: ", calendarDates)
+    
   }, [calendarDates, events])
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function useStore() {
       try {
         const result = await axios(`https://vindel.vercel.app/api/events`);
         setEvents(result.data);
-        console.log('fersk data: ', result.data.items)
+        
         setLoading(false);
       } catch (error) {
         setError(error);
