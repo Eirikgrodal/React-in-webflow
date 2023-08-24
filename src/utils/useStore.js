@@ -22,14 +22,6 @@ export default function useStore() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log("is month", month)
-  console.log("is year", year)
-  console.log("is calendarDates", calendarDates)
-  console.log("is selectedDate", selectedDate)
-  console.log("is currentEvents", currentEvents)
-  console.log("is events", events)
-  console.log("is loading", loading)
-  console.log("is error", error)
   function nextMonth() {
     if (month >= 0 && month < 11) {
       setMonth(month + 1);

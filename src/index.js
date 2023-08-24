@@ -163,7 +163,6 @@ const App = ({ event,}) => {
     };
     addEventListener('mousemove', (event) => { getMousePosition() });
 
-    console.log(meetings)
 
     return (
         <div className="mt-10 text-center relative gap-12  flex lg:items-start items-center lg:flex-row flex-col container  mx-auto ">
@@ -175,7 +174,6 @@ const App = ({ event,}) => {
                         events && meetings &&
                         meetings.map((meeting) => (
                             <li key={meeting?.id} className="relative  ">
-                                {console.log(meeting)}
                                 <a className='flex items-center space-x-6 py-6 xl:static cursor-pointer' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
                                     <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="h-[200px] w-[200px] object-cover flex-none rounded-xl" />
                                     <div className="flex flex-col ">

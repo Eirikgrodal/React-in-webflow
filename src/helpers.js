@@ -61,9 +61,6 @@ export function getCalenderDays(year, month, events) {
     const currentDays = getDaysInMonth(month, year, events);
     const previousDays = getPreviousWeekdays(currentDays[0].date)
     const nextDays = getNextWeekdays(currentDays.at(-1).date)
-    console.log("currentDays", currentDays)
-    console.log("previousDays", previousDays)
-    console.log("nextDays", nextDays)
     return [...previousDays, ...currentDays, ...nextDays] // array med dager i ISO format
 }
 
@@ -232,7 +229,6 @@ export function splitMultiWeeks(currentEventsData) {
             }) 
             newArray.push( ...newEventsArray)
 
-            console.log( "newDatesArray",newDatesArray)
         }
         else {
             newArray.push(event)
