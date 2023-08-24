@@ -22,7 +22,14 @@ export default function useStore() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  console.log("is month", month)
+  console.log("is year", year)
+  console.log("is calendarDates", calendarDates)
+  console.log("is selectedDate", selectedDate)
+  console.log("is currentEvents", currentEvents)
+  console.log("is events", events)
+  console.log("is loading", loading)
+  console.log("is error", error)
   function nextMonth() {
     if (month >= 0 && month < 11) {
       setMonth(month + 1);
@@ -30,6 +37,7 @@ export default function useStore() {
       setYear(year + 1);
       setMonth(0);
     }
+
   }
   function prevMonth() {
     if (month > 0 && month <= 11) {
@@ -40,41 +48,43 @@ export default function useStore() {
     }
   }
 
-  useEffect(() => {
-    if (events.length !== 0) {
-      const currentEventsData = events.items.filter(event => {
-        const eventDate = new Date(event['start-dato'])
-        return eventDate.getMonth() === month && eventDate.getFullYear() === year
-      })
-      const CleansedEvents = currentEventsData.map((event) => {
-        return {
-          name: event.name,
-          slug: event.slug,
-          start: findFirstDayIndex(event['start-dato'], calendarDates), // [rowID, colID] ex: [2, 3]
-          end: findFirstDayIndex(event['slutt-dato'], calendarDates),   // [rowID, colID] ex: [2, 3]
-          days: findHowManyDays(event['start-dato'], event['slutt-dato']),            // ex: 1
-          startDato: event['start-dato'],
-          sluttDato: event['slutt-dato'],
-          squaredEnd: false,
-          color: event.color ?? undefined,
-          squaredStart: false,
-          overlaps: 0,
-        }
-      })
-      const EventsDataWithOverlap =
-        splitMultiWeeks(
-          createLayers(
-            // createOverlapIndexes(
-            getOverlaps(
-              getMultipleMonths(
-                getMultipleWeeks(
-                  sortEventsByStart(CleansedEvents)
-                )))))
+  // useEffect(() => {
+  //   if (events.items && events.items.length !== 0) {
+  //     const currentEventsData = events.items.filter(event => {
+  //       const eventDate = new Date(event['start-dato'])
+  //       console.log("is eventDate", eventDate)
+  //       console.log("return", eventDate.getMonth() === month && eventDate.getFullYear() === year)
+  //       return eventDate.getMonth() === month && eventDate.getFullYear() === year
+  //     })
+  //     const CleansedEvents = currentEventsData.map((event) => {
+  //       return {
+  //         name: event.name,
+  //         slug: event.slug,
+  //         start: findFirstDayIndex(event['start-dato'], calendarDates), // [rowID, colID] ex: [2, 3]
+  //         end: findFirstDayIndex(event['slutt-dato'], calendarDates),   // [rowID, colID] ex: [2, 3]
+  //         days: findHowManyDays(event['start-dato'], event['slutt-dato']),            // ex: 1
+  //         startDato: event['start-dato'],
+  //         sluttDato: event['slutt-dato'],
+  //         squaredEnd: false,
+  //         color: event.color ?? undefined,
+  //         squaredStart: false,
+  //         overlaps: 0,
+  //       }
+  //     })
+  //     const EventsDataWithOverlap =
+  //       splitMultiWeeks(
+  //         createLayers(
+  //           // createOverlapIndexes(
+  //           getOverlaps(
+  //             getMultipleMonths(
+  //               getMultipleWeeks(
+  //                 sortEventsByStart(CleansedEvents)
+  //               )))))
       
-      setCurrentEvents(EventsDataWithOverlap)
-    }
+  //     setCurrentEvents(EventsDataWithOverlap)
+  //   }
     
-  }, [calendarDates, events])
+  // }, [calendarDates, events])
 
   useEffect(() => {
     setCalendarDates(getCalenderDays(year, month))
