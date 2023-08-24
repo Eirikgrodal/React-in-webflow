@@ -186,7 +186,7 @@ const App = ({ event,}) => {
                                                 </dt>
                                                 <dd className='ml-0 text-lg'>
                                                     <time dateTime={meeting['start-dato']}>
-                                                        {'fra ' + getDateAndTime(meeting['start-dato'])}
+                                                        {getDateAndTime(meeting['start-dato'])}
                                                     </time>
                                                     <time dateTime={meeting['start-dato']}>
                                                         {' - ' + getDateAndTime(meeting['slutt-dato'])}
