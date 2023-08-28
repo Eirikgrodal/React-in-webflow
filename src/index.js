@@ -21,19 +21,20 @@ const App = ({ event,}) => {
         setSelectedDate,
         currentEvents,
         events,
+        meetings,
+        setMeetings,
         loading,
         error,
         nextMonth,
         prevMonth
     } = useStore()
 
-
+    console.log(events)
 
     const [visibleClearButton, setVisibleClearButton] = useState(false);
     const [visibleMeetings, setVisibleMeetings] = useState(3);
     const meetingsPerPage = 3;
 
-    const [meetings, setMeetings] = useState([]);
 
     const handleLoadMore = () => {
         const totalMeetings = events?.items.length || 0;
@@ -44,15 +45,28 @@ const App = ({ event,}) => {
         setVisibleMeetings(newVisibleMeetings);
     };
 
+    const handleClearFilter = () => {
+        setVisibleClearButton(false);
+        const sortedMeetings = events.items
+            .filter((meeting) => !meeting._draft) // Exclude draft meetings
+            .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
 
+        const slicedMeetings = sortedMeetings.slice(0, visibleMeetings);
+        setMeetings(slicedMeetings);
+    }
 
 
     useEffect(() => {
         if (events?.items) {
-            const slicedMeetings = events.items.slice(0, visibleMeetings);
+            const sortedMeetings = events.items
+                .filter((meeting) => !meeting._draft) // Exclude draft meetings
+                .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
+
+            const slicedMeetings = sortedMeetings.slice(0, visibleMeetings);
             setMeetings(slicedMeetings);
         }
     }, [events, visibleMeetings]);
+
 
 
     const [hover, setHover] = useState(false)
@@ -122,11 +136,6 @@ const App = ({ event,}) => {
 
     };
 
-    const handleClearFilter = () => {
-        setVisibleClearButton(false);
-        setMeetings(events.items.slice(0, visibleMeetings));
-        // Reset any other filter-related state variables if needed
-    };
 
 
 
@@ -163,16 +172,19 @@ const App = ({ event,}) => {
     };
     addEventListener('mousemove', (event) => { getMousePosition() });
 
-
+    console.log(meetings)
     return (
         <div className="mt-10 text-center relative gap-12  flex lg:items-start items-center lg:flex-row flex-col container  mx-auto ">
             <div className="flex flex-col w-[90%] lg:w-[55%] order-2 lg:order-1 ">
                 <ol className="mt-4 divide-y divide-gray-100 text-sm leading-6 lg:col-span-7 xl:col-span-8">
                     {loading && <p>Loading...</p>}
                     {error && <p>Error: {error.message}</p>}
-                    {!loading &&
-                        events && meetings &&
-                        meetings.map((meeting) => (
+                    {!loading && events && meetings && (
+                        meetings
+                            .map((meeting) => {
+                                console.log("meeting",meeting); // Log the meeting object for debugging
+                                return (
+                                    
                             <li key={meeting?.id} className="relative  ">
                                 <a className='flex items-center space-x-6 py-6 xl:static cursor-pointer' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
                                     <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="h-[200px] w-[200px] object-cover flex-none rounded-xl" />
@@ -253,7 +265,10 @@ const App = ({ event,}) => {
                                     </Menu>
                                 </a>
                             </li>
-                        ))}
+                                );
+                            })
+                    )}
+
 
                 </ol>
                 <div>

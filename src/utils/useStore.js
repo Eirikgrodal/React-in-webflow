@@ -20,6 +20,7 @@ export default function useStore() {
   const [selectedDate, setSelectedDate] = useState()
   const [currentEvents, setCurrentEvents] = useState()
   const [events, setEvents] = useState([]);
+  const [meetings, setMeetings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   function nextMonth() {
@@ -110,6 +111,8 @@ export default function useStore() {
     setCurrentEvents,
     events,
     setEvents,
+    meetings,
+    setMeetings,
     loading,
     setLoading,
     error,
