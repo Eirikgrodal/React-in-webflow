@@ -29,8 +29,6 @@ const App = ({ event,}) => {
         prevMonth
     } = useStore()
 
-    console.log(events)
-
     const [visibleClearButton, setVisibleClearButton] = useState(false);
     const [visibleMeetings, setVisibleMeetings] = useState(3);
     const meetingsPerPage = 3;
@@ -172,7 +170,6 @@ const App = ({ event,}) => {
     };
     addEventListener('mousemove', (event) => { getMousePosition() });
 
-    console.log(meetings)
     return (
         <div className="mt-10 text-center relative gap-12  flex lg:items-start items-center lg:flex-row flex-col container  mx-auto ">
             <div className="flex flex-col w-[90%] lg:w-[55%] order-2 lg:order-1 ">
@@ -182,7 +179,6 @@ const App = ({ event,}) => {
                     {!loading && events && meetings && (
                         meetings
                             .map((meeting) => {
-                                console.log("meeting",meeting); // Log the meeting object for debugging
                                 return (
                                     
                             <li key={meeting?.id} className="relative  ">
