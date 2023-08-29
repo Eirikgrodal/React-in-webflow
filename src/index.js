@@ -13,7 +13,7 @@ import useStore from './utils/useStore'
 
 
 
-const App = ({ event,}) => {
+const App = ({ event, }) => {
     const {
         year,
         month,
@@ -33,7 +33,6 @@ const App = ({ event,}) => {
     const [visibleMeetings, setVisibleMeetings] = useState(3);
     const meetingsPerPage = 3;
 
-
     const handleLoadMore = () => {
         const totalMeetings = events?.items.length || 0;
         const newVisibleMeetings = Math.min(
@@ -48,11 +47,362 @@ const App = ({ event,}) => {
         const sortedMeetings = events.items
             .filter((meeting) => !meeting._draft) // Exclude draft meetings
             .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
-
         const slicedMeetings = sortedMeetings.slice(0, visibleMeetings);
         setMeetings(slicedMeetings);
     }
 
+    const [selectedMeetingList, setSelectedMeetingList] = useState(true);
+
+    function ShowMeetings() {
+        if (selectedMeetingList === true) {
+            return <FromTodayMeetings />
+        } else if (selectedMeetingList === true) {
+            return <ShowAllMeetings />
+        } else if (selectedMeetingList === true) {
+            return <ShowOldEventsMeetings />
+        } else {
+            return <ShowMeetingsError />
+        }
+    };
+
+    function FromTodayMeetings(selectedMeetingList) {
+        selectedMeetingList = true
+        return (
+            <div>
+                <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
+                    <h2 className='text-2xl'>fra idag</h2>
+                    {loading && <p>Loading...</p>}
+                    {error && <p>Error: {error.message}</p>}
+                    {!loading && events && meetings && (
+                        meetings
+                            .map((meeting) => {
+                                return (
+                                    <li key={meeting?.id} className="relative  ">
+                                        <a className='flex items-center space-x-6 py-6 xl:static cursor-pointer' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
+                                            <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="h-[200px] w-[200px] object-cover flex-none rounded-xl" />
+                                            <div className="flex flex-col ">
+                                                <h3 className="pl-2 text-left text-xl font-semibold text-gray-900 xl:pl-3">{meeting.name}</h3>
+                                                <dl className="mt-2 flex flex-col text-left text-gray-500 xl:flex-row">
+                                                    <div className="text-left flex items-start space-x-3">
+                                                        <dt className="mt-0.5">
+                                                            <span className="sr-only">Date</span>
+                                                            {/* <CalendarIcon className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
+                                                        </dt>
+                                                        <dd className='ml-0 text-lg'>
+                                                            <time dateTime={meeting['start-dato']}>
+                                                                {getDateAndTime(meeting['start-dato'])}
+                                                            </time>
+                                                            <time dateTime={meeting['start-dato']}>
+                                                                {' - ' + getDateAndTime(meeting['slutt-dato'])}
+                                                            </time>
+                                                        </dd>
+                                                    </div>
+                                                    <div className="mt-2 flex items-start space-x-3 xl:mt-0 xl:ml-3.5 xl:border-l xl:border-gray-400 xl:border-opacity-50 xl:pl-3.5">
+                                                        <dt className="mt-0.5">
+                                                            <span className="sr-only">Location</span>
+                                                            {/* <MapPinIcon className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
+                                                        </dt>
+                                                        <dd>{meeting?.['hvis-fysisk-lokalisasjon']}</dd>
+                                                    </div>
+                                                </dl>
+                                            </div>
+                                            <Menu as="div" className="absolute top-6 right-0 xl:relative xl:top-auto xl:right-auto xl:self-center">
+                                                <div>
+                                                    <Menu.Button className="-m-2 flex items-center rounded-full p-2 text-gray-500 hover:text-gray-600">
+                                                        <span className="sr-only">Open options</span>
+                                                        {/* <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" /> */}
+                                                    </Menu.Button>
+                                                </div>
+
+                                                <Transition
+                                                    as={Fragment}
+                                                    enter="transition ease-out duration-100"
+                                                    enterFrom="transform opacity-0 scale-95"
+                                                    enterTo="transform opacity-100 scale-100"
+                                                    leave="transition ease-in duration-75"
+                                                    leaveFrom="transform opacity-100 scale-100"
+                                                    leaveTo="transform opacity-0 scale-95"
+                                                >
+                                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                        <div className="py-1">
+                                                            <Menu.Item>
+                                                                {({ active }) => (
+                                                                    <a
+                                                                        href="#"
+                                                                        className={classNames(
+                                                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                                            'block px-4 py-2 text-sm'
+                                                                        )}
+                                                                    >
+                                                                        Edit
+                                                                    </a>
+                                                                )}
+                                                            </Menu.Item>
+                                                            <Menu.Item>
+                                                                {({ active }) => (
+                                                                    <a
+                                                                        href="#"
+                                                                        className={classNames(
+                                                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                                            'block px-4 py-2 text-sm'
+                                                                        )}
+                                                                    >
+                                                                        Cancel
+                                                                    </a>
+                                                                )}
+                                                            </Menu.Item>
+                                                        </div>
+                                                    </Menu.Items>
+                                                </Transition>
+                                            </Menu>
+                                        </a>
+                                    </li>
+                                );
+                            })
+                    )}
+                </ol>
+                <div>
+                    {meetings.length > 2 && (
+                        <button
+                            className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black px-6 py-4 rounded-md"
+                            onClick={handleLoadMore}
+                        >
+                            Load More
+                        </button>
+                    )}
+                </div>
+            </div>
+        )
+    };
+
+    function ShowAllMeetings(selectedMeetingList) {
+        selectedMeetingList = false
+        return (
+            <div>
+                <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
+                    <h2 className='text-2xl'>sist Publisert </h2>
+                    {loading && <p>Loading...</p>}
+                    {error && <p>Error: {error.message}</p>}
+                    {!loading && events && meetings && (
+                        meetings
+                            .map((meeting) => {
+                                return (
+                                    <li key={meeting?.id} className="relative  ">
+                                        <a className='flex items-center space-x-6 py-6 xl:static cursor-pointer' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
+                                            <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="h-[200px] w-[200px] object-cover flex-none rounded-xl" />
+                                            <div className="flex flex-col ">
+                                                <h3 className="pl-2 text-left text-xl font-semibold text-gray-900 xl:pl-3">{meeting.name}</h3>
+                                                <dl className="mt-2 flex flex-col text-left text-gray-500 xl:flex-row">
+                                                    <div className="text-left flex items-start space-x-3">
+                                                        <dt className="mt-0.5">
+                                                            <span className="sr-only">Date</span>
+                                                            {/* <CalendarIcon className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
+                                                        </dt>
+                                                        <dd className='ml-0 text-lg'>
+                                                            <time dateTime={meeting['start-dato']}>
+                                                                {getDateAndTime(meeting['start-dato'])}
+                                                            </time>
+                                                            <time dateTime={meeting['start-dato']}>
+                                                                {' - ' + getDateAndTime(meeting['slutt-dato'])}
+                                                            </time>
+                                                        </dd>
+                                                    </div>
+                                                    <div className="mt-2 flex items-start space-x-3 xl:mt-0 xl:ml-3.5 xl:border-l xl:border-gray-400 xl:border-opacity-50 xl:pl-3.5">
+                                                        <dt className="mt-0.5">
+                                                            <span className="sr-only">Location</span>
+                                                            {/* <MapPinIcon className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
+                                                        </dt>
+                                                        <dd>{meeting?.['hvis-fysisk-lokalisasjon']}</dd>
+                                                    </div>
+                                                </dl>
+                                            </div>
+                                            <Menu as="div" className="absolute top-6 right-0 xl:relative xl:top-auto xl:right-auto xl:self-center">
+                                                <div>
+                                                    <Menu.Button className="-m-2 flex items-center rounded-full p-2 text-gray-500 hover:text-gray-600">
+                                                        <span className="sr-only">Open options</span>
+                                                        {/* <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" /> */}
+                                                    </Menu.Button>
+                                                </div>
+
+                                                <Transition
+                                                    as={Fragment}
+                                                    enter="transition ease-out duration-100"
+                                                    enterFrom="transform opacity-0 scale-95"
+                                                    enterTo="transform opacity-100 scale-100"
+                                                    leave="transition ease-in duration-75"
+                                                    leaveFrom="transform opacity-100 scale-100"
+                                                    leaveTo="transform opacity-0 scale-95"
+                                                >
+                                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                        <div className="py-1">
+                                                            <Menu.Item>
+                                                                {({ active }) => (
+                                                                    <a
+                                                                        href="#"
+                                                                        className={classNames(
+                                                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                                            'block px-4 py-2 text-sm'
+                                                                        )}
+                                                                    >
+                                                                        Edit
+                                                                    </a>
+                                                                )}
+                                                            </Menu.Item>
+                                                            <Menu.Item>
+                                                                {({ active }) => (
+                                                                    <a
+                                                                        href="#"
+                                                                        className={classNames(
+                                                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                                            'block px-4 py-2 text-sm'
+                                                                        )}
+                                                                    >
+                                                                        Cancel
+                                                                    </a>
+                                                                )}
+                                                            </Menu.Item>
+                                                        </div>
+                                                    </Menu.Items>
+                                                </Transition>
+                                            </Menu>
+                                        </a>
+                                    </li>
+                                );
+                            })
+                    )}
+                </ol>
+                <div>
+                    {meetings.length > 2 && (
+                        <button
+                            className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black px-6 py-4 rounded-md"
+                            onClick={handleLoadMore}
+                        >
+                            Load More
+                        </button>
+                    )}
+                </div>
+            </div>
+        )
+    };
+
+    function ShowOldEventsMeetings(selectedMeetingList) {
+        selectedMeetingList = false
+        return (
+            <div>
+                <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
+                    <h2 className='text-2xl'>Tidligere Arrangementer </h2>
+                    {loading && <p>Loading...</p>}
+                    {error && <p>Error: {error.message}</p>}
+                    {!loading && events && meetings && (
+                        meetings
+                            .map((meeting) => {
+                                return (
+                                    <li key={meeting?.id} className="relative  ">
+                                        <a className='flex items-center space-x-6 py-6 xl:static cursor-pointer' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
+                                            <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="h-[200px] w-[200px] object-cover flex-none rounded-xl" />
+                                            <div className="flex flex-col ">
+                                                <h3 className="pl-2 text-left text-xl font-semibold text-gray-900 xl:pl-3">{meeting.name}</h3>
+                                                <dl className="mt-2 flex flex-col text-left text-gray-500 xl:flex-row">
+                                                    <div className="text-left flex items-start space-x-3">
+                                                        <dt className="mt-0.5">
+                                                            <span className="sr-only">Date</span>
+                                                            {/* <CalendarIcon className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
+                                                        </dt>
+                                                        <dd className='ml-0 text-lg'>
+                                                            <time dateTime={meeting['start-dato']}>
+                                                                {getDateAndTime(meeting['start-dato'])}
+                                                            </time>
+                                                            <time dateTime={meeting['start-dato']}>
+                                                                {' - ' + getDateAndTime(meeting['slutt-dato'])}
+                                                            </time>
+                                                        </dd>
+                                                    </div>
+                                                    <div className="mt-2 flex items-start space-x-3 xl:mt-0 xl:ml-3.5 xl:border-l xl:border-gray-400 xl:border-opacity-50 xl:pl-3.5">
+                                                        <dt className="mt-0.5">
+                                                            <span className="sr-only">Location</span>
+                                                            {/* <MapPinIcon className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
+                                                        </dt>
+                                                        <dd>{meeting?.['hvis-fysisk-lokalisasjon']}</dd>
+                                                    </div>
+                                                </dl>
+                                            </div>
+                                            <Menu as="div" className="absolute top-6 right-0 xl:relative xl:top-auto xl:right-auto xl:self-center">
+                                                <div>
+                                                    <Menu.Button className="-m-2 flex items-center rounded-full p-2 text-gray-500 hover:text-gray-600">
+                                                        <span className="sr-only">Open options</span>
+                                                        {/* <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" /> */}
+                                                    </Menu.Button>
+                                                </div>
+
+                                                <Transition
+                                                    as={Fragment}
+                                                    enter="transition ease-out duration-100"
+                                                    enterFrom="transform opacity-0 scale-95"
+                                                    enterTo="transform opacity-100 scale-100"
+                                                    leave="transition ease-in duration-75"
+                                                    leaveFrom="transform opacity-100 scale-100"
+                                                    leaveTo="transform opacity-0 scale-95"
+                                                >
+                                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                        <div className="py-1">
+                                                            <Menu.Item>
+                                                                {({ active }) => (
+                                                                    <a
+                                                                        href="#"
+                                                                        className={classNames(
+                                                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                                            'block px-4 py-2 text-sm'
+                                                                        )}
+                                                                    >
+                                                                        Edit
+                                                                    </a>
+                                                                )}
+                                                            </Menu.Item>
+                                                            <Menu.Item>
+                                                                {({ active }) => (
+                                                                    <a
+                                                                        href="#"
+                                                                        className={classNames(
+                                                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                                            'block px-4 py-2 text-sm'
+                                                                        )}
+                                                                    >
+                                                                        Cancel
+                                                                    </a>
+                                                                )}
+                                                            </Menu.Item>
+                                                        </div>
+                                                    </Menu.Items>
+                                                </Transition>
+                                            </Menu>
+                                        </a>
+                                    </li>
+                                );
+                            })
+                    )}
+                </ol>
+                <div>
+                    {meetings.length > 2 && (
+                        <button
+                            className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black px-6 py-4 rounded-md"
+                            onClick={handleLoadMore}
+                        >
+                            Load More
+                        </button>
+                    )}
+                </div>
+            </div>
+        )
+    };
+
+    function ShowMeetingsError() {
+        let selectedMeetingList = false
+        return (
+            <div className="mt-[25%] divide-y divide-gray-100 text-sm leading-6 lg:col-span-7 xl:col-span-8">
+                <h2 className='text-2xl'>Sorry did not find any events </h2>
+            </div>
+        )
+    };
 
     useEffect(() => {
         if (events?.items) {
@@ -172,111 +522,30 @@ const App = ({ event,}) => {
 
     return (
         <div className="mt-10 text-center relative gap-12  flex lg:items-start items-center lg:flex-row flex-col container  mx-auto ">
-            <div className="flex flex-col w-[90%] lg:w-[55%] order-2 lg:order-1 ">
-                <ol className="mt-4 divide-y divide-gray-100 text-sm leading-6 lg:col-span-7 xl:col-span-8">
-                    {loading && <p>Loading...</p>}
-                    {error && <p>Error: {error.message}</p>}
-                    {!loading && events && meetings && (
-                        meetings
-                            .map((meeting) => {
-                                return (
-                                    
-                            <li key={meeting?.id} className="relative  ">
-                                <a className='flex items-center space-x-6 py-6 xl:static cursor-pointer' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
-                                    <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="h-[200px] w-[200px] object-cover flex-none rounded-xl" />
-                                    <div className="flex flex-col ">
-                                        <h3 className="pl-2 text-left text-xl font-semibold text-gray-900 xl:pl-3">{meeting.name}</h3>
-                                        <dl className="mt-2 flex flex-col text-left text-gray-500 xl:flex-row">
-                                            <div className="text-left flex items-start space-x-3">
-                                                <dt className="mt-0.5">
-                                                    <span className="sr-only">Date</span>
-                                                    {/* <CalendarIcon className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
-                                                </dt>
-                                                <dd className='ml-0 text-lg'>
-                                                    <time dateTime={meeting['start-dato']}>
-                                                        {getDateAndTime(meeting['start-dato'])}
-                                                    </time>
-                                                    <time dateTime={meeting['start-dato']}>
-                                                        {' - ' + getDateAndTime(meeting['slutt-dato'])}
-                                                    </time>
-                                                </dd>
-                                            </div>
-                                            <div className="mt-2 flex items-start space-x-3 xl:mt-0 xl:ml-3.5 xl:border-l xl:border-gray-400 xl:border-opacity-50 xl:pl-3.5">
-                                                <dt className="mt-0.5">
-                                                    <span className="sr-only">Location</span>
-                                                    {/* <MapPinIcon className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
-                                                </dt>
-                                                <dd>{meeting?.['hvis-fysisk-lokalisasjon']}</dd>
-                                            </div>
-                                        </dl>
-                                    </div>
-                                    <Menu as="div" className="absolute top-6 right-0 xl:relative xl:top-auto xl:right-auto xl:self-center">
-                                        <div>
-                                            <Menu.Button className="-m-2 flex items-center rounded-full p-2 text-gray-500 hover:text-gray-600">
-                                                <span className="sr-only">Open options</span>
-                                                {/* <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" /> */}
-                                            </Menu.Button>
-                                        </div>
-
-                                        <Transition
-                                            as={Fragment}
-                                            enter="transition ease-out duration-100"
-                                            enterFrom="transform opacity-0 scale-95"
-                                            enterTo="transform opacity-100 scale-100"
-                                            leave="transition ease-in duration-75"
-                                            leaveFrom="transform opacity-100 scale-100"
-                                            leaveTo="transform opacity-0 scale-95"
-                                        >
-                                            <Menu.Items className="absolute right-0 z-10 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                <div className="py-1">
-                                                    <Menu.Item>
-                                                        {({ active }) => (
-                                                            <a
-                                                                href="#"
-                                                                className={classNames(
-                                                                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                                                    'block px-4 py-2 text-sm'
-                                                                )}
-                                                            >
-                                                                Edit
-                                                            </a>
-                                                        )}
-                                                    </Menu.Item>
-                                                    <Menu.Item>
-                                                        {({ active }) => (
-                                                            <a
-                                                                href="#"
-                                                                className={classNames(
-                                                                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                                                    'block px-4 py-2 text-sm'
-                                                                )}
-                                                            >
-                                                                Cancel
-                                                            </a>
-                                                        )}
-                                                    </Menu.Item>
-                                                </div>
-                                            </Menu.Items>
-                                        </Transition>
-                                    </Menu>
-                                </a>
-                            </li>
-                                );
-                            })
-                    )}
-
-
-                </ol>
-                <div>
-                    {meetings.length > 2 && (
-                        <button
-                            className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black px-6 py-4 rounded-md"
-                            onClick={handleLoadMore}
-                        >
-                            Load More
-                        </button>
-                    )}
+            <div className="flex flex-col h-full w-[90%] lg:w-[55%] order-2 lg:order-1 ">
+                <h2 className='text-2xl'>Sortere:</h2>
+                <div className='flex flex-row justify-between '>
+                    <button
+                        className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black grow max-w-[150px] py-4 rounded-md"
+                        onClick={handleLoadMore}
+                    >
+                        Sist Publisert
+                    </button>
+                    <button
+                        className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black grow max-w-[150px] py-4 rounded-md"
+                        onClick={handleLoadMore}
+                    >
+                        Fra idag
+                    </button>
+                    <button
+                        className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black grow max-w-[150px] py-4 rounded-md"
+                        onClick={handleLoadMore}
+                    >
+                        Tidligere Arrangementer
+                    </button>
                 </div>
+                <ShowMeetings />
+
             </div>
             <div className="flex lg:sticky lg:top-12 lg:left-0 lg:right-0 w-[90%] lg:w-[40%] pt-8 items-start text-gray-900 order-1 lg:order-2">
                 <div className='w-full lg:sticky lg:top-20 lg:left-0 lg:right-0'>
@@ -336,7 +605,7 @@ const App = ({ event,}) => {
                                         )}
 
                                     >
-                                        
+
 
                                         {events && events?.items?.length > 0 && (
                                             <div>
@@ -348,31 +617,31 @@ const App = ({ event,}) => {
                                                         day?.isSelected && !day?.isToday && ' text-red-500'
                                                     )}
                                                 >
-                                                    
+
                                                     {new Date(new Date(day?.date)?.setDate(new Date(day?.date)?.getDate() - 1))?.getDate()}
                                                 </div>
                                                 {isInckudedDato(day?.date) && (
-                                                <div
-                                                    style={{
-                                                        display: "grid",
-                                                        gap: "1.5px",
-                                                        gridTemplateColumns: "repeat(1,1fr)",
-                                                        gridTemplateRows: `repeat(1, 1fr)`,
-                                                    }}
-                                                    className='aspect-square absolute left-0 right-0 top-0 w-10 h-10 mx-auto my-[0.35rem]'
-                                                >
                                                     <div
-                                                        id='filter button'
                                                         style={{
-                                                            background: `linear-gradient(to right, ${setGray(day?.date) ? "gray" : "orange"} 50%, ${setOrange(day?.date) ? "orange" : "gray"} 50%)`,
-
+                                                            display: "grid",
+                                                            gap: "1.5px",
+                                                            gridTemplateColumns: "repeat(1,1fr)",
+                                                            gridTemplateRows: `repeat(1, 1fr)`,
                                                         }}
-                                                        onClick={() => handlerNewMeetings(day?.date)} // Pass the selected date as an argument
-                                                        className='rounded-full opacity-30  cursor-pointer rotate-45 ease-in-out hover:ease-in-out hover:rotate-0 duration-300'
-
+                                                        className='aspect-square absolute left-0 right-0 top-0 w-10 h-10 mx-auto my-[0.35rem]'
                                                     >
-                                                    </div>
-                                                </div>)}
+                                                        <div
+                                                            id='filter button'
+                                                            style={{
+                                                                background: `linear-gradient(to right, ${setGray(day?.date) ? "gray" : "orange"} 50%, ${setOrange(day?.date) ? "orange" : "gray"} 50%)`,
+
+                                                            }}
+                                                            onClick={() => handlerNewMeetings(day?.date)} // Pass the selected date as an argument
+                                                            className='rounded-full opacity-30  cursor-pointer rotate-45 ease-in-out hover:ease-in-out hover:rotate-0 duration-300'
+
+                                                        >
+                                                        </div>
+                                                    </div>)}
                                             </div>
                                         )
                                         }
