@@ -49,24 +49,30 @@ const App = ({ event, }) => {
             .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
         const slicedMeetings = sortedMeetings.slice(0, visibleMeetings);
         setMeetings(slicedMeetings);
-    }
-
-    const [selectedMeetingList, setSelectedMeetingList] = useState(true);
-
-    function ShowMeetings() {
-        if (selectedMeetingList === true) {
-            return <FromTodayMeetings />
-        } else if (selectedMeetingList === true) {
-            return <ShowAllMeetings />
-        } else if (selectedMeetingList === true) {
-            return <ShowOldEventsMeetings />
-        } else {
-            return <ShowMeetingsError />
-        }
     };
 
-    function FromTodayMeetings(selectedMeetingList) {
-        selectedMeetingList = true
+    const [visibleFromTodayMeetings, setvisibleFromTodayMeetings] = useState(true); 
+    const handleFromTodayMeetings = () => {
+        setvisibleFromTodayMeetings(true);
+        setvisibleShowAllMeetings(false);
+        setvisibleShowOldEventsMeetings(false);
+    };
+
+    const [visibleShowAllMeetings, setvisibleShowAllMeetings] = useState(false);
+    const handleShowAllMeetings = () => {
+        setvisibleFromTodayMeetings(false);
+        setvisibleShowAllMeetings(true);
+        setvisibleShowOldEventsMeetings(false);
+    };
+
+    const [visibleShowOldEventsMeetings, setvisibleShowOldEventsMeetings] = useState(false);
+    const handleShowOldEventsMeetings = () => {
+        setvisibleFromTodayMeetings(false);
+        setvisibleShowAllMeetings(false);
+        setvisibleShowOldEventsMeetings(true);
+    };
+
+    function FromTodayMeetings() {
         return (
             <div>
                 <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
@@ -172,11 +178,10 @@ const App = ({ event, }) => {
                     )}
                 </div>
             </div>
-        )
+        );
     };
 
-    function ShowAllMeetings(selectedMeetingList) {
-        selectedMeetingList = false
+    function ShowAllMeetings() {
         return (
             <div>
                 <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
@@ -285,8 +290,7 @@ const App = ({ event, }) => {
         )
     };
 
-    function ShowOldEventsMeetings(selectedMeetingList) {
-        selectedMeetingList = false
+    function ShowOldEventsMeetings() {
         return (
             <div>
                 <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
@@ -396,7 +400,6 @@ const App = ({ event, }) => {
     };
 
     function ShowMeetingsError() {
-        let selectedMeetingList = false
         return (
             <div className="mt-[25%] divide-y divide-gray-100 text-sm leading-6 lg:col-span-7 xl:col-span-8">
                 <h2 className='text-2xl'>Sorry did not find any events </h2>
@@ -527,25 +530,26 @@ const App = ({ event, }) => {
                 <div className='flex flex-row justify-between '>
                     <button
                         className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black grow max-w-[150px] py-4 rounded-md"
-                        onClick={handleLoadMore}
+                        onClick={handleShowAllMeetings}
                     >
                         Sist Publisert
                     </button>
                     <button
                         className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black grow max-w-[150px] py-4 rounded-md"
-                        onClick={handleLoadMore}
+                        onClick={handleFromTodayMeetings}
                     >
                         Fra idag
                     </button>
                     <button
                         className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black grow max-w-[150px] py-4 rounded-md"
-                        onClick={handleLoadMore}
+                        onClick={handleShowOldEventsMeetings}
                     >
                         Tidligere Arrangementer
                     </button>
                 </div>
-                <ShowMeetings />
-
+                {visibleFromTodayMeetings && <FromTodayMeetings /> || null} 
+                {visibleShowAllMeetings && <ShowAllMeetings /> || null} 
+                {visibleShowOldEventsMeetings && <ShowOldEventsMeetings /> || null} 
             </div>
             <div className="flex lg:sticky lg:top-12 lg:left-0 lg:right-0 w-[90%] lg:w-[40%] pt-8 items-start text-gray-900 order-1 lg:order-2">
                 <div className='w-full lg:sticky lg:top-20 lg:left-0 lg:right-0'>
