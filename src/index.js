@@ -28,10 +28,41 @@ const App = ({ event, }) => {
         nextMonth,
         prevMonth
     } = useStore()
-
-    const [visibleClearButton, setVisibleClearButton] = useState(false);
+    console.log('Came from store', meetings)
+    // const [visibleClearButton, setVisibleClearButton] = useState(false);
     const [visibleMeetings, setVisibleMeetings] = useState(3);
+    const [filterText, setFilterText] = useState('Fra idag');
+    const [filterDato, setFilterDato] = useState(false);
     const meetingsPerPage = 3;
+
+    // useEffect(() => {
+    //     if (meetings && meetings.length > 0) {
+    //         const sortedMeetings = meetings
+    //             .filter((meeting) => !meeting._draft) // Exclude draft meetings
+    //             .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
+
+    //         const slicedMeetings = sortedMeetings.slice(0, visibleMeetings);
+    //         setMeetings(slicedMeetings);
+    //     }
+    // }, [visibleMeetings]);
+
+
+
+    const [hover, setHover] = useState(false)
+    const [loaded, setLoaded] = useState(false)
+    const [mobileClicked, setMobileClicked] = useState(false)
+    // useEffect(() => {
+    //     setLoaded(true);
+    //     if (meetings && meetings.length > 0) {
+    //         const sortedMeetings = meetings
+    //             .filter((meeting) => !meeting._draft) // Exclude draft meetings
+    //             .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
+
+    //         const slicedMeetings = sortedMeetings.slice(0, 3);
+    //         setMeetings(slicedMeetings);
+    //     }
+    // }, [])
+
 
     const handleLoadMore = () => {
         const totalMeetings = events?.items.length || 0;
@@ -43,44 +74,119 @@ const App = ({ event, }) => {
     };
 
     const handleClearFilter = () => {
-        setVisibleClearButton(false);
-        const sortedMeetings = events.items
+        setVisibleMeetings(3);
+        setMeetings(events?.items
             .filter((meeting) => !meeting._draft) // Exclude draft meetings
-            .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
-        const slicedMeetings = sortedMeetings.slice(0, visibleMeetings);
-        setMeetings(slicedMeetings);
+            .filter((meeting) => meeting['slutt-dato'] >= new Date().toISOString())
+            .sort((a, b) => new Date(a['start-dato']) - new Date(b['start-dato']))// Sort by start date, newest to oldest
+);
+        // const sortedMeetings = events.items
+        //     .filter((meeting) => !meeting._draft) // Exclude draft meetings
+        //     .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
+        // const slicedMeetings = sortedMeetings.slice(0, visibleMeetings);
+        // setMeetings(slicedMeetings);
     };
 
-    const [visibleFromTodayMeetings, setvisibleFromTodayMeetings] = useState(true); 
+    const handlerNewMeetings = (selectedDate) => {
+        console.log("selected date", selectedDate)
+
+        setMeetings(events?.items?.filter((meeting) => {
+            const startDate = new Date(meeting['start-dato']);
+            const endDate = new Date(meeting['slutt-dato']);
+            const selectedDateTime = new Date(selectedDate)
+            const selectedDateTimeT = new Date(selectedDate).toLocaleDateString()
+            console.log("selectedDateTimeT", selectedDateTime)
+            console.log("startDate", getDateAndTime(meeting['start-dato']))
+            console.log("endDate", getDateAndTime(meeting['slutt-dato']))
+            console.log("selectedDateTime", selectedDateTime.getDate())
+            console.log("startDate", startDate.getMonth())
+            console.log("endDate", endDate.getMonth())
+            console.log("selectedDateTime", selectedDateTime.getMonth())
+            console.log("startDate", startDate.getFullYear())
+            console.log("endDate", endDate.getFullYear())
+            console.log("selectedDateTime", selectedDateTime.getFullYear())
+
+ 
+            const same = startDate.getFullYear() === selectedDateTime.getFullYear() && endDate.getFullYear() === selectedDateTime.getFullYear() &&
+                startDate.getMonth() === selectedDateTime.getMonth() && endDate.getMonth() === selectedDateTime.getMonth() &&
+                startDate.getDate() === selectedDateTime.getDate() && endDate.getDate() === selectedDateTime.getDate() &&
+                startDate.getDay() === selectedDateTime.getDay() && endDate.getDay() === selectedDateTime.getDay() 
+
+            return (startDate <= selectedDateTime && selectedDateTime <= endDate) || same;
+        }));
+
+        setFilterDato(true)
+
+    };
+
     const handleFromTodayMeetings = () => {
-        setvisibleFromTodayMeetings(true);
-        setvisibleShowAllMeetings(false);
-        setvisibleShowOldEventsMeetings(false);
+        setFilterDato(false)
+        setFilterText('Fra idag')
     };
 
-    const [visibleShowAllMeetings, setvisibleShowAllMeetings] = useState(false);
     const handleShowAllMeetings = () => {
-        setvisibleFromTodayMeetings(false);
-        setvisibleShowAllMeetings(true);
-        setvisibleShowOldEventsMeetings(false);
+        setFilterDato(false)
+        setFilterText('Sist Publisert')
     };
 
-    const [visibleShowOldEventsMeetings, setvisibleShowOldEventsMeetings] = useState(false);
     const handleShowOldEventsMeetings = () => {
-        setvisibleFromTodayMeetings(false);
-        setvisibleShowAllMeetings(false);
-        setvisibleShowOldEventsMeetings(true);
+        setFilterDato(false) 
+        setFilterText('Tidligere Arrangementer')
     };
 
-    function FromTodayMeetings() {
+    function RenderMeetings({meetings, visibleMeetings}) {
+        const [sortedMeetings, setSortedMeetings] = useState(meetings)
+        console.log("Meetings inside render meetings", meetings)
+        useEffect(() => {
+            if (!filterDato && filterText === 'Fra idag') {
+                const sortedMeetingsTemp = events?.items && events?.items
+                    .filter((meeting) => !meeting._draft) // Exclude draft meetings
+                    .filter((meeting) => meeting['slutt-dato'] >= new Date().toISOString())
+                    .sort((a, b) => new Date(a['start-dato']) - new Date(b['start-dato'])); // Sort by start date, newest to oldest
+
+                const slicedMeetings = sortedMeetingsTemp && sortedMeetingsTemp.slice(0, visibleMeetings);
+                setSortedMeetings(slicedMeetings);
+            }
+            if (!filterDato && filterText === 'Sist Publisert') {
+                const sortedMeetingsTemp = events?.items && events?.items
+                    .filter((meeting) => !meeting._draft) // Exclude draft meetings
+                    .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
+
+                const slicedMeetings = sortedMeetingsTemp && sortedMeetingsTemp.slice(0, visibleMeetings);
+                setSortedMeetings(slicedMeetings);
+            }
+
+            if (!filterDato && filterText === 'Tidligere Arrangementer') {
+                const sortedMeetingsTemp = events?.items && events?.items
+                    .filter((meeting) => !meeting._draft) // Exclude draft meetings
+                    .filter((meeting) => meeting['slutt-dato'] <= new Date().toISOString())
+                    .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
+
+                const slicedMeetings = sortedMeetingsTemp && sortedMeetingsTemp.slice(0, visibleMeetings);
+                setSortedMeetings(slicedMeetings);
+            }
+
+
+            if (meetings && meetings.length > 0 && filterDato){
+                const slicedMeetings = meetings.slice(0, visibleMeetings);
+                setSortedMeetings(slicedMeetings);
+            }
+
+        }, [])
+        // const newMeetings = meetings.filter((meeting) => {
+        //     if (meeting['start-dato']>= new Date().toISOString()) {
+        //         return meeting
+        //     }   
+        // }).sort((a, b) => new Date(a['start-dato']) - Date(b['start-dato']));
+        console.log("sortedMeetings inside render meetings", sortedMeetings)
         return (
             <div>
                 <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
-                    <h2 className='text-2xl'>fra idag</h2>
+                    <h2 className='text-2xl'>{filterText}</h2>
                     {loading && <p>Loading...</p>}
                     {error && <p>Error: {error.message}</p>}
-                    {!loading && events && meetings && (
-                        meetings
+                    {meetings && sortedMeetings && (
+                        sortedMeetings
                             .map((meeting) => {
                                 return (
                                     <li key={meeting?.id} className="relative  ">
@@ -168,7 +274,7 @@ const App = ({ event, }) => {
                     )}
                 </ol>
                 <div>
-                    {meetings.length > 2 && (
+                    {meetings && meetings.length > 3 && (
                         <button
                             className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black px-6 py-4 rounded-md"
                             onClick={handleLoadMore}
@@ -407,24 +513,6 @@ const App = ({ event, }) => {
         )
     };
 
-    useEffect(() => {
-        if (events?.items) {
-            const sortedMeetings = events.items
-                .filter((meeting) => !meeting._draft) // Exclude draft meetings
-                .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
-
-            const slicedMeetings = sortedMeetings.slice(0, visibleMeetings);
-            setMeetings(slicedMeetings);
-        }
-    }, [events, visibleMeetings]);
-
-
-
-    const [hover, setHover] = useState(false)
-    const [loaded, setLoaded] = useState(false)
-    const [mobileClicked, setMobileClicked] = useState(false)
-    useEffect(() => { setLoaded(true) }, [])
-
     const handleHover = (isHovered) => {
         setHover(isHovered);
         if (isHovered) {
@@ -472,20 +560,7 @@ const App = ({ event, }) => {
     };
 
 
-    const handlerNewMeetings = (selectedDate) => {
-
-
-        setMeetings(events?.items?.filter((meeting) => {
-            const startDate = new Date(meeting['start-dato']);
-            const endDate = new Date(meeting['slutt-dato']);
-            const selectedDateTime = new Date(selectedDate);
-
-            return startDate <= selectedDateTime && selectedDateTime <= endDate;
-        }));
-
-        setVisibleClearButton(true);
-
-    };
+    
 
 
 
@@ -547,9 +622,9 @@ const App = ({ event, }) => {
                         Tidligere Arrangementer
                     </button>
                 </div>
-                {visibleFromTodayMeetings && <FromTodayMeetings /> || null} 
-                {visibleShowAllMeetings && <ShowAllMeetings /> || null} 
-                {visibleShowOldEventsMeetings && <ShowOldEventsMeetings /> || null} 
+                <RenderMeetings meetings={meetings} visibleMeetings={visibleMeetings}/>  
+                {/* {visibleShowAllMeetings && <ShowAllMeetings /> || null} 
+                {visibleShowOldEventsMeetings && <ShowOldEventsMeetings /> || null}  */}
             </div>
             <div className="flex lg:sticky lg:top-12 lg:left-0 lg:right-0 w-[90%] lg:w-[40%] pt-8 items-start text-gray-900 order-1 lg:order-2">
                 <div className='w-full lg:sticky lg:top-20 lg:left-0 lg:right-0'>
@@ -660,14 +735,14 @@ const App = ({ event, }) => {
                     )}
 
                     <div className='m-4'>
-                        {visibleClearButton && (
+    
                             <button
                                 className="mt-4 bg-[#f6a24a] text-black hover:bg-[#ABA6FB] px-6 py-4 rounded-md"
                                 onClick={handleClearFilter}
                             >
                                 Clear filter
                             </button>
-                        )}
+                        
                     </div>
                 </div>
 

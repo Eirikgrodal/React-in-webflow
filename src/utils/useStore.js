@@ -23,6 +23,15 @@ export default function useStore() {
   const [meetings, setMeetings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const fetchData = async () => {
+    try {
+      await axios(`https://vindel.vercel.app/api/events`).then(res => { console.log(res.data.items); setEvents(res.data); setMeetings(res.data.items) })
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+    }
+  }
   function nextMonth() {
     if (month >= 0 && month < 11) {
       setMonth(month + 1);
@@ -78,25 +87,16 @@ export default function useStore() {
   //   }
     
   // }, [calendarDates, events])
+  useEffect(async () => {
+    await fetchData();
+  }, [])
 
   useEffect(() => {
     setCalendarDates(getCalenderDays(year, month))
   }, [month, year])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await axios(`https://vindel.vercel.app/api/events`);
-        setEvents(result.data);
-        
-        setLoading(false);
-      } catch (error) {
-        setError(error);
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  
+
 
   return {
     year,
