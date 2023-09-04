@@ -268,6 +268,49 @@ export function splitMultiWeeksWithoutMonthChange(start, end, index = 0) {
     return weeks;
 }
 
+export function extractYear(inputString) {
+    if (inputString && inputString.length >= 4) {
+        // Extract the first 4 characters from the inputString
+        const year = inputString.substring(0, 4);
+        return year;
+    } else {
+        return "";
+    }
+}
+
+export function extractMonth(inputString) {
+    if (inputString && inputString.length >= 7) {
+        // Extract the month substring (characters 5 to 6) from the inputString
+        const month = inputString.substring(5, 7);
+        return month;
+    } else {
+        return "";
+    }
+}
+
+export function extractAndModifySubstring(inputString) {
+    // Find the last occurrence of '-'
+    const lastHyphenIndex = inputString.lastIndexOf('-');
+
+    // Find the first occurrence of 'T' after the last '-'
+    const firstTIndex = inputString.indexOf('T', lastHyphenIndex);
+
+    if (lastHyphenIndex !== -1 && firstTIndex !== -1) {
+        // Get the substring between the last '-' and 'T'
+        let result = inputString.substring(lastHyphenIndex + 1, firstTIndex);
+
+        // Check if the result starts with '0'
+        if (result.charAt(0) === '0') {
+            return result.substring(1);
+        }else {
+            return result;
+        }
+    }
+
+    // If no '-' or 'T' is found, or '0' is not the first character, return an empty string or handle it accordingly
+    return '';
+}
+
 export function getDayAndTime(date) {
     const dateObject = new Date(date);
     const options = { weekday: 'long', hour: 'numeric', minute: 'numeric' };

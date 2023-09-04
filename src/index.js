@@ -6,7 +6,10 @@ import {
     getDayAndTime,
     getDateAndTime,
     getNorwegianMonthName,
-    getNorwegianDate
+    getNorwegianDate,
+    extractAndModifySubstring,
+    extractYear,
+    extractMonth
 } from './helpers'
 import ReactDOM from 'react-dom'
 import useStore from './utils/useStore'
@@ -34,6 +37,7 @@ const App = ({ event, }) => {
     const [filterText, setFilterText] = useState('Fra idag');
     const [filterDato, setFilterDato] = useState(false);
     const meetingsPerPage = 3;
+    console.log("calender dates",calendarDates)
 
     // useEffect(() => {
     //     if (meetings && meetings.length > 0) {
@@ -79,7 +83,7 @@ const App = ({ event, }) => {
             .filter((meeting) => !meeting._draft) // Exclude draft meetings
             .filter((meeting) => meeting['slutt-dato'] >= new Date().toISOString())
             .sort((a, b) => new Date(a['start-dato']) - new Date(b['start-dato']))// Sort by start date, newest to oldest
-);
+        );
         // const sortedMeetings = events.items
         //     .filter((meeting) => !meeting._draft) // Exclude draft meetings
         //     .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
@@ -88,32 +92,85 @@ const App = ({ event, }) => {
     };
 
     const handlerNewMeetings = (selectedDate) => {
-        console.log("selected date", selectedDate)
+        const selectedYear = parseInt(extractYear(selectedDate))
+        const selectedMounth = parseInt(extractMonth(selectedDate))
+        const selectedDato = parseInt(extractAndModifySubstring(selectedDate))
+        console.log('selectedYear', selectedYear)
+        console.log('selectedMounth', selectedMounth)
+        console.log('selectedDato', selectedDato)
+
+        console.log('events',events?.items)
 
         setMeetings(events?.items?.filter((meeting) => {
-            const startDate = new Date(meeting['start-dato']);
-            const endDate = new Date(meeting['slutt-dato']);
-            const selectedDateTime = new Date(selectedDate)
-            const selectedDateTimeT = new Date(selectedDate).toLocaleDateString()
-            console.log("selectedDateTimeT", selectedDateTime)
-            console.log("startDate", getDateAndTime(meeting['start-dato']))
-            console.log("endDate", getDateAndTime(meeting['slutt-dato']))
-            console.log("selectedDateTime", selectedDateTime.getDate())
-            console.log("startDate", startDate.getMonth())
-            console.log("endDate", endDate.getMonth())
-            console.log("selectedDateTime", selectedDateTime.getMonth())
-            console.log("startDate", startDate.getFullYear())
-            console.log("endDate", endDate.getFullYear())
-            console.log("selectedDateTime", selectedDateTime.getFullYear())
+            const startYear = parseInt(extractYear(meeting['start-dato']))
+            const startMounth = parseInt(extractMonth(meeting['start-dato']))
+            const startDato = parseInt(extractAndModifySubstring(meeting['start-dato']))
 
- 
-            const same = startDate.getFullYear() === selectedDateTime.getFullYear() && endDate.getFullYear() === selectedDateTime.getFullYear() &&
-                startDate.getMonth() === selectedDateTime.getMonth() && endDate.getMonth() === selectedDateTime.getMonth() &&
-                startDate.getDate() === selectedDateTime.getDate() && endDate.getDate() === selectedDateTime.getDate() &&
-                startDate.getDay() === selectedDateTime.getDay() && endDate.getDay() === selectedDateTime.getDay() 
+            const endYear = parseInt(extractYear(meeting['slutt-dato']))
+            const endMounth = parseInt(extractMonth(meeting['slutt-dato']))
+            const endDato = parseInt(extractAndModifySubstring(meeting['slutt-dato']))
 
-            return (startDate <= selectedDateTime && selectedDateTime <= endDate) || same;
+            console.log('startYear', startYear)
+            console.log('startMounth', startMounth)
+            console.log('startDato', startDato)
+
+            console.log('endYear', endYear)
+            console.log('endMounth', endMounth)
+            console.log('endDato', endDato)
+
+
+            let indicator = false;
+
+            if (selectedYear === startYear && selectedYear === endYear){
+                if(selectedMounth > startMounth && selectedMounth < endMounth){
+                    indicator = true
+                }
+                if (selectedMounth === startMounth && selectedMounth < endMounth){
+                    if(selectedDato >= startDato){
+                        indicator = true 
+                    }
+                }
+                if (selectedMounth > startMounth && selectedMounth === endMounth){
+                    if(selectedDato <=  endDato){
+                        indicator = true
+                    }
+                }
+                if(selectedMounth === startMounth && selectedMounth === endMounth){
+                    if(selectedDato >= startDato && selectedDato <= endDato){
+                        indicator = true
+                    }
+                }
+            }
+            if (selectedYear > startYear && selectedYear === endYear) {
+                if(selectedMounth < endMounth){
+                    indicator = true
+                }
+                if (selectedMounth === endMounth){
+                    if(selectedDato <= endDato){
+                        indicator = true
+                    }
+                }
+                
+            }
+            
+            if (selectedYear === startYear && selectedYear < endYear) {
+                if(selectedMounth > startMounth){
+                    indicator = true
+                }
+                if (selectedMounth === startMounth){
+                    if(selectedDato >= startDato){
+                        indicator = true
+                    }
+                }
+            }
+            if (selectedYear > startYear && selectedYear < endYear) {
+                    indicator = true
+            }
+
+            return indicator;
         }));
+
+
 
         setFilterDato(true)
 
@@ -130,11 +187,11 @@ const App = ({ event, }) => {
     };
 
     const handleShowOldEventsMeetings = () => {
-        setFilterDato(false) 
+        setFilterDato(false)
         setFilterText('Tidligere Arrangementer')
     };
 
-    function RenderMeetings({meetings, visibleMeetings}) {
+    function RenderMeetings({ meetings, visibleMeetings }) {
         const [sortedMeetings, setSortedMeetings] = useState(meetings)
         console.log("Meetings inside render meetings", meetings)
         useEffect(() => {
@@ -167,7 +224,7 @@ const App = ({ event, }) => {
             }
 
 
-            if (meetings && meetings.length > 0 && filterDato){
+            if (meetings && meetings.length > 0 && filterDato) {
                 const slicedMeetings = meetings.slice(0, visibleMeetings);
                 setSortedMeetings(slicedMeetings);
             }
@@ -560,19 +617,79 @@ const App = ({ event, }) => {
     };
 
 
-    
+
 
 
 
 
     const isInckudedDato = (selectedDate) => {
         let flag = false
-        events?.items?.map((meeting) => {
-            const startDate = new Date(meeting['start-dato']);
-            const endDate = new Date(meeting['slutt-dato']);
-            const selectedDateTime = new Date(selectedDate);
+        const selectedYear = parseInt(extractYear(selectedDate))
+        const selectedMounth = parseInt(extractMonth(selectedDate))
+        const selectedDato = parseInt(extractAndModifySubstring(selectedDate))
+        events && events?.items?.map((meeting) => {
+            const startYear = parseInt(extractYear(meeting['start-dato']))
+            const startMounth = parseInt(extractMonth(meeting['start-dato']))
+            const startDato = parseInt(extractAndModifySubstring(meeting['start-dato']))
 
-            if (startDate <= selectedDateTime && selectedDateTime <= endDate) {
+            const endYear = parseInt(extractYear(meeting['slutt-dato']))
+            const endMounth = parseInt(extractMonth(meeting['slutt-dato']))
+            const endDato = parseInt(extractAndModifySubstring(meeting['slutt-dato']))
+
+            console.log('startYear', startYear)
+            console.log('startMounth', startMounth)
+            console.log('startDato', startDato)
+
+            console.log('endYear', endYear)
+            console.log('endMounth', endMounth)
+            console.log('endDato', endDato)
+
+
+
+
+            if (selectedYear === startYear && selectedYear === endYear) {
+                if (selectedMounth > startMounth && selectedMounth < endMounth) {
+                    flag = true
+                }
+                if (selectedMounth === startMounth && selectedMounth < endMounth) {
+                    if (selectedDato >= startDato) {
+                        flag = true
+                    }
+                }
+                if (selectedMounth > startMounth && selectedMounth === endMounth) {
+                    if (selectedDato <= endDato) {
+                        flag = true
+                    }
+                }
+                if (selectedMounth === startMounth && selectedMounth === endMounth) {
+                    if (selectedDato >= startDato && selectedDato <= endDato) {
+                        flag = true
+                    }
+                }
+            }
+            if (selectedYear > startYear && selectedYear === endYear) {
+                if (selectedMounth < endMounth) {
+                    flag = true
+                }
+                if (selectedMounth === endMounth) {
+                    if (selectedDato <= endDato) {
+                        flag = true
+                    }
+                }
+
+            }
+
+            if (selectedYear === startYear && selectedYear < endYear) {
+                if (selectedMounth > startMounth) {
+                    flag = true
+                }
+                if (selectedMounth === startMounth) {
+                    if (selectedDato >= startDato) {
+                        flag = true
+                    }
+                }
+            }
+            if (selectedYear > startYear && selectedYear < endYear) {
                 flag = true
             }
         })
@@ -622,7 +739,7 @@ const App = ({ event, }) => {
                         Tidligere Arrangementer
                     </button>
                 </div>
-                <RenderMeetings meetings={meetings} visibleMeetings={visibleMeetings}/>  
+                <RenderMeetings meetings={meetings} visibleMeetings={visibleMeetings} />
                 {/* {visibleShowAllMeetings && <ShowAllMeetings /> || null} 
                 {visibleShowOldEventsMeetings && <ShowOldEventsMeetings /> || null}  */}
             </div>
@@ -663,9 +780,6 @@ const App = ({ event, }) => {
                         <div className='isolate w-full relative'>
                             <div className="relative z-0 isolate w-full mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
                                 {calendarDates && calendarDates.map((day, dayIdx) => (
-
-
-
                                     <div
                                         key={day?.date}
                                         className={classNames(
@@ -681,52 +795,44 @@ const App = ({ event, }) => {
                                             dayIdx === 6 && 'rounded-tr-lg',
                                             dayIdx === calendarDates.length - 7 && 'rounded-bl-lg',
                                             dayIdx === calendarDates.length - 1 && 'rounded-br-lg',
-                                        )}
-
-                                    >
-
-
+                                        )}>
                                         {events && events?.items?.length > 0 && (
                                             <div>
                                                 <div
-
                                                     className={classNames(
                                                         'mx-auto flex h-7 w-7 items-center justify-center rounded-full',
                                                         day?.isSelected && day?.isToday && ' text-red-500',
                                                         day?.isSelected && !day?.isToday && ' text-red-500'
-                                                    )}
-                                                >
-
-                                                    {new Date(new Date(day?.date)?.setDate(new Date(day?.date)?.getDate() - 1))?.getDate()}
+                                                    )}>
+                                                    {extractAndModifySubstring(day?.date)}
                                                 </div>
-                                                {isInckudedDato(day?.date) && (
-                                                    <div
-                                                        style={{
-                                                            display: "grid",
-                                                            gap: "1.5px",
-                                                            gridTemplateColumns: "repeat(1,1fr)",
-                                                            gridTemplateRows: `repeat(1, 1fr)`,
-                                                        }}
-                                                        className='aspect-square absolute left-0 right-0 top-0 w-10 h-10 mx-auto my-[0.35rem]'
-                                                    >
+                                                <div>
+                                                    
+                                                    {isInckudedDato(day?.date) && (
                                                         <div
-                                                            id='filter button'
                                                             style={{
-                                                                background: `linear-gradient(to right, ${setGray(day?.date) ? "gray" : "orange"} 50%, ${setOrange(day?.date) ? "orange" : "gray"} 50%)`,
-
+                                                                display: "grid",
+                                                                gap: "1.5px",
+                                                                gridTemplateColumns: "repeat(1,1fr)",
+                                                                gridTemplateRows: `repeat(1, 1fr)`,
                                                             }}
-                                                            onClick={() => handlerNewMeetings(day?.date)} // Pass the selected date as an argument
-                                                            className='rounded-full opacity-30  cursor-pointer rotate-45 ease-in-out hover:ease-in-out hover:rotate-0 duration-300'
-
+                                                            className='aspect-square absolute left-0 right-0 top-0 w-10 h-10 mx-auto my-[0.35rem]'
                                                         >
-                                                        </div>
-                                                    </div>)}
+                                                            <div
+                                                                id='filter button'
+                                                                style={{
+                                                                    background: `linear-gradient(to right, ${setGray(day?.date) ? "gray" : "orange"} 50%, ${setOrange(day?.date) ? "orange" : "gray"} 50%)`,
+
+                                                                }}
+                                                                onClick={() => handlerNewMeetings(day?.date)} // Pass the selected date as an argument
+                                                                className='rounded-full opacity-30  cursor-pointer rotate-45 ease-in-out hover:ease-in-out hover:rotate-0 duration-300'
+
+                                                            >
+                                                            </div>
+                                                        </div>)}
+                                                </div>
                                             </div>
-                                        )
-                                        }
-
-
-
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -735,14 +841,14 @@ const App = ({ event, }) => {
                     )}
 
                     <div className='m-4'>
-    
-                            <button
-                                className="mt-4 bg-[#f6a24a] text-black hover:bg-[#ABA6FB] px-6 py-4 rounded-md"
-                                onClick={handleClearFilter}
-                            >
-                                Clear filter
-                            </button>
-                        
+
+                        <button
+                            className="mt-4 bg-[#f6a24a] text-black hover:bg-[#ABA6FB] px-6 py-4 rounded-md"
+                            onClick={handleClearFilter}
+                        >
+                            Clear filter
+                        </button>
+
                     </div>
                 </div>
 
