@@ -336,7 +336,7 @@ const App = ({ event, }) => {
                             className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black px-6 py-4 rounded-md"
                             onClick={handleLoadMore}
                         >
-                            Load More
+                            Last mere
                         </button>
                     )}
                 </div>
@@ -846,7 +846,7 @@ const App = ({ event, }) => {
                             className="mt-4 bg-[#f6a24a] text-black hover:bg-[#ABA6FB] px-6 py-4 rounded-md"
                             onClick={handleClearFilter}
                         >
-                            Clear filter
+                            Nullstill filter
                         </button>
 
                     </div>
