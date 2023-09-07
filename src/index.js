@@ -31,13 +31,11 @@ const App = ({ event, }) => {
         nextMonth,
         prevMonth
     } = useStore()
-    console.log('Came from store', meetings)
     // const [visibleClearButton, setVisibleClearButton] = useState(false);
     const [visibleMeetings, setVisibleMeetings] = useState(3);
     const [filterText, setFilterText] = useState('Fra idag');
     const [filterDato, setFilterDato] = useState(false);
     const meetingsPerPage = 3;
-    console.log("calender dates",calendarDates)
 
     // useEffect(() => {
     //     if (meetings && meetings.length > 0) {
@@ -95,11 +93,6 @@ const App = ({ event, }) => {
         const selectedYear = parseInt(extractYear(selectedDate))
         const selectedMounth = parseInt(extractMonth(selectedDate))
         const selectedDato = parseInt(extractAndModifySubstring(selectedDate))
-        console.log('selectedYear', selectedYear)
-        console.log('selectedMounth', selectedMounth)
-        console.log('selectedDato', selectedDato)
-
-        console.log('events',events?.items)
 
         setMeetings(events?.items?.filter((meeting) => {
             const startYear = parseInt(extractYear(meeting['start-dato']))
@@ -110,66 +103,59 @@ const App = ({ event, }) => {
             const endMounth = parseInt(extractMonth(meeting['slutt-dato']))
             const endDato = parseInt(extractAndModifySubstring(meeting['slutt-dato']))
 
-            console.log('startYear', startYear)
-            console.log('startMounth', startMounth)
-            console.log('startDato', startDato)
-
-            console.log('endYear', endYear)
-            console.log('endMounth', endMounth)
-            console.log('endDato', endDato)
 
 
             let indicator = false;
 
-            if (selectedYear === startYear && selectedYear === endYear){
-                if(selectedMounth > startMounth && selectedMounth < endMounth){
+            if (selectedYear === startYear && selectedYear === endYear) {
+                if (selectedMounth > startMounth && selectedMounth < endMounth) {
                     indicator = true
                 }
-                if (selectedMounth === startMounth && selectedMounth < endMounth){
-                    if(selectedDato >= startDato){
-                        indicator = true 
-                    }
-                }
-                if (selectedMounth > startMounth && selectedMounth === endMounth){
-                    if(selectedDato <=  endDato){
+                if (selectedMounth === startMounth && selectedMounth < endMounth) {
+                    if (selectedDato >= startDato) {
                         indicator = true
                     }
                 }
-                if(selectedMounth === startMounth && selectedMounth === endMounth){
-                    if(selectedDato >= startDato && selectedDato <= endDato){
+                if (selectedMounth > startMounth && selectedMounth === endMounth) {
+                    if (selectedDato <= endDato) {
+                        indicator = true
+                    }
+                }
+                if (selectedMounth === startMounth && selectedMounth === endMounth) {
+                    if (selectedDato >= startDato && selectedDato <= endDato) {
                         indicator = true
                     }
                 }
             }
             if (selectedYear > startYear && selectedYear === endYear) {
-                if(selectedMounth < endMounth){
+                if (selectedMounth < endMounth) {
                     indicator = true
                 }
-                if (selectedMounth === endMounth){
-                    if(selectedDato <= endDato){
+                if (selectedMounth === endMounth) {
+                    if (selectedDato <= endDato) {
                         indicator = true
                     }
                 }
-                
+
             }
-            
+
             if (selectedYear === startYear && selectedYear < endYear) {
-                if(selectedMounth > startMounth){
+                if (selectedMounth > startMounth) {
                     indicator = true
                 }
-                if (selectedMounth === startMounth){
-                    if(selectedDato >= startDato){
+                if (selectedMounth === startMounth) {
+                    if (selectedDato >= startDato) {
                         indicator = true
                     }
                 }
             }
             if (selectedYear > startYear && selectedYear < endYear) {
-                    indicator = true
+                indicator = true
             }
 
             return indicator;
         }).filter((meeting) => !meeting._draft) // Exclude draft meetings
-);
+        );
 
 
 
@@ -194,7 +180,6 @@ const App = ({ event, }) => {
 
     function RenderMeetings({ meetings, visibleMeetings }) {
         const [sortedMeetings, setSortedMeetings] = useState(meetings)
-        console.log("Meetings inside render meetings", meetings)
         useEffect(() => {
             if (!filterDato && filterText === 'Fra idag') {
                 const sortedMeetingsTemp = events?.items && events?.items
@@ -236,7 +221,6 @@ const App = ({ event, }) => {
         //         return meeting
         //     }   
         // }).sort((a, b) => new Date(a['start-dato']) - Date(b['start-dato']));
-        console.log("sortedMeetings inside render meetings", sortedMeetings)
         return (
             <div>
                 <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
@@ -632,22 +616,9 @@ const App = ({ event, }) => {
             const startYear = parseInt(extractYear(meeting['start-dato']))
             const startMounth = parseInt(extractMonth(meeting['start-dato']))
             const startDato = parseInt(extractAndModifySubstring(meeting['start-dato']))
-
             const endYear = parseInt(extractYear(meeting['slutt-dato']))
             const endMounth = parseInt(extractMonth(meeting['slutt-dato']))
             const endDato = parseInt(extractAndModifySubstring(meeting['slutt-dato']))
-
-            console.log('startYear', startYear)
-            console.log('startMounth', startMounth)
-            console.log('startDato', startDato)
-
-            console.log('endYear', endYear)
-            console.log('endMounth', endMounth)
-            console.log('endDato', endDato)
-
-
-
-
             if (selectedYear === startYear && selectedYear === endYear) {
                 if (selectedMounth > startMounth && selectedMounth < endMounth) {
                     flag = true
@@ -808,7 +779,7 @@ const App = ({ event, }) => {
                                                     {extractAndModifySubstring(day?.date)}
                                                 </div>
                                                 <div>
-                                                    
+
                                                     {isInckudedDato(day?.date) && (
                                                         <div
                                                             style={{
