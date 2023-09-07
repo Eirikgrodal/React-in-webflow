@@ -168,7 +168,8 @@ const App = ({ event, }) => {
             }
 
             return indicator;
-        }));
+        }).filter((meeting) => !meeting._draft) // Exclude draft meetings
+);
 
 
 
