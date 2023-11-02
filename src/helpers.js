@@ -319,7 +319,7 @@ export function getDayAndTime(date) {
 
 export function getDateAndTime(date) {
     const dateObject = new Date(date);
-    const options = { day: 'numeric', month: 'long', hour: 'numeric', minute: 'numeric' };
+    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric' };
     return dateObject.toLocaleString('no-NO', options);
 }
 
