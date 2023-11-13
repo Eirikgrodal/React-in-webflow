@@ -688,8 +688,8 @@ const App = ({ event, }) => {
     addEventListener('mousemove', (event) => { getMousePosition() });
 
     return (
-        <div className="mt-10 text-center relative gap-12  flex lg:items-start items-center lg:flex-row flex-col container  mx-auto ">
-            <div className="flex flex-col h-full w-[90%] lg:w-[55%] order-2 lg:order-1 ">
+        <div className="mt-10 text-center relative gap-20  flex lg:items-start items-center lg:flex-row flex-col container  mx-auto ">
+            <div className="flex flex-col h-full w-[90%] lg:w-[80%] order-2 lg:order-1 ">
                 <h2 className='text-2xl'>Sortere:</h2>
                 <div className='flex flex-row justify-between '>
                     <button
@@ -715,7 +715,7 @@ const App = ({ event, }) => {
                 {/* {visibleShowAllMeetings && <ShowAllMeetings /> || null} 
                 {visibleShowOldEventsMeetings && <ShowOldEventsMeetings /> || null}  */}
             </div>
-            <div className="flex lg:sticky lg:top-12 lg:left-0 lg:right-0 w-[90%] lg:w-[40%] pt-8 items-start text-gray-900 order-1 lg:order-2">
+            <div className="flex lg:sticky lg:top-12 lg:left-0 lg:right-0 w-[90%] lg:w-[30%] pt-8 items-start text-gray-900 order-1 lg:order-2">
                 <div className='w-full lg:sticky lg:top-20 lg:left-0 lg:right-0'>
                     <div className='flex flex-row w-full '>
                         <button
@@ -755,12 +755,12 @@ const App = ({ event, }) => {
                                     <div
                                         key={day?.date}
                                         className={classNames(
-                                            'h-[3.25rem] mx-auto flex items-center justify-center relative w-full hover:bg-gray-100 focus:z-10',
-                                            day.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
+                                            'lg:h-[2.5rem] h-[3.25rem] mx-auto flex items-center justify-center relative w-full hover:bg-gray-100 focus:z-10',
+                                            day.isCurrentMonth ? 'bg-white' : 'bg-gray-100',
                                             (day.isSelected || day.isToday) && '',
                                             day.isSelected && 'text-white',
                                             !day.isSelected && day.isCurrentMonth && !day.isToday && 'text-gray-900',
-                                            !day.isSelected && !day.isCurrentMonth && !day.isToday && 'text-gray-400',
+                                            !day.isSelected && !day.isCurrentMonth && !day.isToday && 'text-gray-500',
 
                                             calendarDates[dayIdx - 1]?.isToday && !day.isToday && !day.isSelected && 'text-orange-600 font-semibold',
                                             dayIdx === 0 && 'rounded-tl-lg',
@@ -769,7 +769,7 @@ const App = ({ event, }) => {
                                             dayIdx === calendarDates.length - 1 && 'rounded-br-lg',
                                         )}>
                                         {events && events?.items?.length > 0 && (
-                                            <div>
+                                            <div className='flex items-center justify-center'>
                                                 <div
                                                     className={classNames(
                                                         'mx-auto flex h-7 w-7 items-center justify-center rounded-full',
@@ -788,19 +788,16 @@ const App = ({ event, }) => {
                                                                 gridTemplateColumns: "repeat(1,1fr)",
                                                                 gridTemplateRows: `repeat(1, 1fr)`,
                                                             }}
-                                                            className='aspect-square absolute left-0 right-0 top-0 w-10 h-10 mx-auto my-[0.35rem]'
+                                                            className='aspect-square absolute left-0 right-0 top-0 lg:w-7 lg:h-7 w-10 h-10 mx-auto my-[0.35rem]'
                                                         >
                                                             <div
                                                                 id='filter button'
-                                                                style={{
-                                                                    background: `linear-gradient(to right, ${setGray(day?.date) ? "gray" : "orange"} 50%, ${setOrange(day?.date) ? "orange" : "gray"} 50%)`,
-
-                                                                }}
                                                                 onClick={() => handlerNewMeetings(day?.date)} // Pass the selected date as an argument
-                                                                className='rounded-full opacity-30  cursor-pointer rotate-45 ease-in-out hover:ease-in-out hover:rotate-0 duration-300'
-
+                                                                className='rounded-full  bg-[#F6A24A] lg:text-xs cursor-pointer flex items-center justify-center '
                                                             >
+                                                                {extractAndModifySubstring(day?.date)}
                                                             </div>
+                                                            
                                                         </div>)}
                                                 </div>
                                             </div>
