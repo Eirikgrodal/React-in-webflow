@@ -224,7 +224,6 @@ const App = ({ event, }) => {
         return (
             <div>
                 <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
-                    <h2 className='text-2xl'>{filterText}</h2>
                     {loading && <p>Loading...</p>}
                     {error && <p>Error: {error.message}</p>}
                     {meetings && sortedMeetings && (
@@ -232,39 +231,56 @@ const App = ({ event, }) => {
                             .map((meeting) => {
                                 return (
                                     <li key={meeting?.id} className="relative  ">
-                                        <a className='flex items-center space-x-6 py-6 xl:static cursor-pointer' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
-                                            <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="h-[200px] w-[200px] object-cover flex-none rounded-xl" />
-                                            <div className="flex flex-col ">
-                                                <h3 className="pl-2 text-left text-xl font-semibold text-gray-900 xl:pl-3">{meeting.name}</h3>
-                                                <dl className="mt-2 flex flex-col text-left text-gray-500 xl:flex-row">
-                                                    <div className="text-left flex items-start space-x-3">
-                                                        <dt className="mt-0.5">
-                                                            <span className="sr-only">Date</span>
-                                                            {/* <CalendarIcon className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
-                                                        </dt>
-                                                        <dd className='ml-0 text-lg'>
-                                                            <time dateTime={meeting['start-dato']}>
-                                                                {getDateAndTime(meeting['start-dato'])}
+                                        <a className='flex  justify-between py-6 xl:static cursor-pointer' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
+                                            <div className='flex space-x-6 md:max-w-lg'>
+                                                <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="md:h-[150px] md:w-[150px] h-[100px] w-[100px] object-cover flex-none rounded-xl" />
+                                                <div className="flex flex-col justify-between h-[100px] py-7 ">
+                                                    <h3 className="pl-2 text-left text-xl font-semibold text-gray-900 ">{meeting.name}</h3>
+                                                    <div>
+                                                        <div className='pl-2 flex flex-row gap-1 '>
+                                                            <p className='text-lg '>Date:</p>
+                                                            <time className='leading-7' dateTime={meeting['start-dato']}>
+                                                            {getDateAndTime(meeting['start-dato'])}
                                                             </time>
-                                                            <time dateTime={meeting['start-dato']}>
-                                                                {' - ' + getDateAndTime(meeting['slutt-dato'])}
-                                                            </time>
-                                                        </dd>
-                                                    </div>
-                                                    <div className="mt-2 flex items-start space-x-3 xl:mt-0 xl:ml-3.5 xl:border-l xl:border-gray-400 xl:border-opacity-50 xl:pl-3.5">
-                                                        <dt className="mt-0.5">
-                                                            <span className="sr-only">Location</span>
-                                                            {/* <MapPinIcon className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
-                                                        </dt>
-                                                        <dd>{meeting?.['hvis-fysisk-lokalisasjon']}</dd>
-                                                    </div>
-                                                </dl>
+                                                        </div>
+                                                        <div className='pl-2 flex flex-row gap-1 '>
+                                                            <p className='text-lg '>Sted:</p>
+                                                            <p className='leading-7'>{meeting?.['hvis-fysisk-lokalisasjon']}</p>
+                                                        </div>
+                                                    </div>    
+                                                    {/* <dl className="mt-2 flex flex-col text-left text-gray-500 xl:flex-row">
+                                                        <div className="text-left flex items-start space-x-3">
+                                                            <dt className="mt-0.5">
+                                                                <span className="sr-only">Date</span>
+                                                                
+                                                            </dt>
+                                                            <dd className='ml-0 text-lg'>
+                                                                <time dateTime={meeting['start-dato']}>
+                                                                    {getDateAndTime(meeting['start-dato'])}
+                                                                </time>
+                                                                <time dateTime={meeting['start-dato']}>
+                                                                    {' - ' + getDateAndTime(meeting['slutt-dato'])}
+                                                                </time>
+                                                            </dd>
+                                                        </div>
+                                                        <div className="mt-2 flex items-start space-x-3 xl:mt-0 xl:ml-3.5 xl:border-l xl:border-gray-400 xl:border-opacity-50 xl:pl-3.5">
+                                                            <dt className="mt-0.5">
+                                                                <span className="sr-only">Location</span>
+                                                            </dt>
+                                                            <dd>{meeting?.['hvis-fysisk-lokalisasjon']}</dd>
+                                                        </div>
+                                                    </dl> */}
+                                                </div>
                                             </div>
-                                            <Menu as="div" className="absolute top-6 right-0 xl:relative xl:top-auto xl:right-auto xl:self-center">
+                                            <div className='flex flex-col-reverse'>
+                                                <p className='text-xs'>Program og påmelding <span className='pl-2'>➔</span></p>
+
+                                            </div>
+                                            {/* <Menu as="div" className="absolute top-6 right-0 xl:relative xl:top-auto xl:right-auto xl:self-center">
                                                 <div>
                                                     <Menu.Button className="-m-2 flex items-center rounded-full p-2 text-gray-500 hover:text-gray-600">
                                                         <span className="sr-only">Open options</span>
-                                                        {/* <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" /> */}
+                                                        
                                                     </Menu.Button>
                                                 </div>
 
@@ -308,7 +324,7 @@ const App = ({ event, }) => {
                                                         </div>
                                                     </Menu.Items>
                                                 </Transition>
-                                            </Menu>
+                                            </Menu> */}
                                         </a>
                                     </li>
                                 );
@@ -690,7 +706,7 @@ const App = ({ event, }) => {
     return (
         <div className="mt-10 text-center relative gap-20  flex lg:items-start items-center lg:flex-row flex-col container  mx-auto ">
             <div className="flex flex-col h-full w-[90%] lg:w-[80%] order-2 lg:order-1 ">
-                <h2 className='text-2xl'>Sortere:</h2>
+                {/* <h2 className='text-2xl'>Sortere:</h2>
                 <div className='flex flex-row justify-between '>
                     <button
                         className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black grow max-w-[150px] py-4 rounded-md"
@@ -710,7 +726,7 @@ const App = ({ event, }) => {
                     >
                         Tidligere Arrangementer
                     </button>
-                </div>
+                </div> */}
                 <RenderMeetings meetings={meetings} visibleMeetings={visibleMeetings} />
                 {/* {visibleShowAllMeetings && <ShowAllMeetings /> || null} 
                 {visibleShowOldEventsMeetings && <ShowOldEventsMeetings /> || null}  */}
