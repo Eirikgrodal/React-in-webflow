@@ -37,6 +37,9 @@ const App = ({ event, }) => {
     const [filterDato, setFilterDato] = useState(false);
     const meetingsPerPage = 3;
 
+    // const [currentPage, setCurrentPage] = useState(0);
+    // const [totalPages, setTotalPages] = useState(0);
+
     // useEffect(() => {
     //     if (meetings && meetings.length > 0) {
     //         const sortedMeetings = meetings
@@ -74,6 +77,8 @@ const App = ({ event, }) => {
         );
         setVisibleMeetings(newVisibleMeetings);
     };
+
+
 
     const handleClearFilter = () => {
         setVisibleMeetings(3);
@@ -231,21 +236,21 @@ const App = ({ event, }) => {
                             .map((meeting) => {
                                 return (
                                     <li key={meeting?.id} className="relative  ">
-                                        <a className='flex  justify-between py-6 xl:static cursor-pointer' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
-                                            <div className='flex space-x-6 md:max-w-lg'>
-                                                <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="md:h-[150px] md:w-[150px] h-[100px] w-[100px] object-cover flex-none rounded-xl" />
-                                                <div className="flex flex-col justify-between h-[100px] py-7 ">
-                                                    <h3 className="pl-2 text-left text-xl font-semibold text-gray-900 ">{meeting.name}</h3>
+                                        <a className='flex flex-col md:flex-row  justify-between py-6 xl:static cursor-pointer border-b-[1px] border-[#F9BB7A]' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
+                                            <div className='flex md:space-x-6 xl:max-w-none md:max-w-lg flex-col md:flex-row'>
+                                                <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="md:h-[150px] md:w-[150px] h-[50vw] w-full object-cover flex-none rounded-xl" />
+                                                <div className="flex flex-col justify-between md:h-[100px] py-4 ">
+                                                    <h3 className="md:pl-2 text-left md:text-xl text-md md:leading-7 leading-5 font-semibold text-gray-900 ">{meeting.name}</h3>
                                                     <div>
-                                                        <div className='pl-2 flex flex-row gap-1 '>
-                                                            <p className='text-lg '>Date:</p>
-                                                            <time className='leading-7' dateTime={meeting['start-dato']}>
+                                                        <div className='md:pl-2 flex flex-row gap-1 '>
+                                                            <p className='md:text-lg text-md'>Date:</p>
+                                                            <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
                                                             {getDateAndTime(meeting['start-dato'])}
                                                             </time>
                                                         </div>
-                                                        <div className='pl-2 flex flex-row gap-1 '>
-                                                            <p className='text-lg '>Sted:</p>
-                                                            <p className='leading-7'>{meeting?.['hvis-fysisk-lokalisasjon']}</p>
+                                                        <div className='md:pl-2 flex flex-row gap-1 '>
+                                                            <p className='md:text-lg text-md'>Sted:</p>
+                                                            <p className='text-xs leading-6 md:text-sm md:leading-7'>{meeting?.['hvis-fysisk-lokalisasjon']}</p>
                                                         </div>
                                                     </div>    
                                                     {/* <dl className="mt-2 flex flex-col text-left text-gray-500 xl:flex-row">
@@ -272,8 +277,8 @@ const App = ({ event, }) => {
                                                     </dl> */}
                                                 </div>
                                             </div>
-                                            <div className='flex flex-col-reverse'>
-                                                <p className='text-xs'>Program og påmelding <span className='pl-2'>➔</span></p>
+                                            <div className='md:flex md:flex-col-reverse '>
+                                                <p className='text-xs md:w-[151px] text-start' src={meeting?.bilde?.url}>Program og påmelding <span className='pl-2'>➔</span></p>
 
                                             </div>
                                             {/* <Menu as="div" className="absolute top-6 right-0 xl:relative xl:top-auto xl:right-auto xl:self-center">
@@ -828,7 +833,7 @@ const App = ({ event, }) => {
                     <div className='m-4'>
 
                         <button
-                            className="mt-4 bg-[#f6a24a] text-black hover:bg-[#ABA6FB] px-6 py-4 rounded-md"
+                            className="mt-4 bg-[#4D4D4D] text-white hover:text-black hover:bg-[#f6a24a] px-6 py-4 rounded-md"
                             onClick={handleClearFilter}
                         >
                             Nullstill filter
