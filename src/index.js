@@ -36,9 +36,7 @@ const App = ({ event, }) => {
     const [filterText, setFilterText] = useState('Fra idag');
     const [filterDato, setFilterDato] = useState(false);
     const meetingsPerPage = 3;
-
-    // const [currentPage, setCurrentPage] = useState(0);
-    // const [totalPages, setTotalPages] = useState(0);
+    
 
     // useEffect(() => {
     //     if (meetings && meetings.length > 0) {
