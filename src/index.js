@@ -115,47 +115,43 @@ const App = ({ event, }) => {
                 if (selectedMounth > startMounth && selectedMounth < endMounth) {
                     indicator = true
                 }
-                if (selectedMounth === startMounth && selectedMounth < endMounth) {
-                    if (selectedDato >= startDato) {
-                        indicator = true
-                    }
-                }
-                if (selectedMounth > startMounth && selectedMounth === endMounth) {
-                    if (selectedDato <= endDato) {
+                if (selectedMounth === startMounth && selectedMounth === endMounth) {
+                    if (selectedDato === startDato) {
                         indicator = true
                     }
                 }
                 if (selectedMounth === startMounth && selectedMounth === endMounth) {
-                    if (selectedDato >= startDato && selectedDato <= endDato) {
+                    if (selectedDato === endDato) {
                         indicator = true
                     }
                 }
+                
             }
-            if (selectedYear > startYear && selectedYear === endYear) {
-                if (selectedMounth < endMounth) {
-                    indicator = true
-                }
-                if (selectedMounth === endMounth) {
-                    if (selectedDato <= endDato) {
-                        indicator = true
-                    }
-                }
+            // if (selectedYear > startYear && selectedYear === endYear) {
+            //     if (selectedMounth < endMounth) {
+            //         indicator = true
+            //     }
+            //     if (selectedMounth === endMounth) {
+            //         if (selectedDato <= endDato) {
+            //             indicator = true
+            //         }
+            //     }
 
-            }
+            // }
 
-            if (selectedYear === startYear && selectedYear < endYear) {
-                if (selectedMounth > startMounth) {
-                    indicator = true
-                }
-                if (selectedMounth === startMounth) {
-                    if (selectedDato >= startDato) {
-                        indicator = true
-                    }
-                }
-            }
-            if (selectedYear > startYear && selectedYear < endYear) {
-                indicator = true
-            }
+            // if (selectedYear === startYear && selectedYear < endYear) {
+            //     if (selectedMounth > startMounth) {
+            //         indicator = true
+            //     }
+            //     if (selectedMounth === startMounth) {
+            //         if (selectedDato >= startDato) {
+            //             indicator = true
+            //         }
+            //     }
+            // }
+            // if (selectedYear > startYear && selectedYear < endYear) {
+            //     indicator = true
+            // }
 
             return indicator;
         }).filter((meeting) => !meeting._draft) // Exclude draft meetings
