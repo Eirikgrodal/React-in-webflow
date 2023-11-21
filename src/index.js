@@ -365,9 +365,11 @@ const App = ({ event, }) => {
                         <div className='h-14 w-14'>
                             <button
                                 onClick={() => { goToPreviousPage() }}
-                                className={`bg-[#4D4D4D] text-white hover:text-black hover:bg-[#f6a24a] h-14 w-14 rounded-full ${currentPage === 1 ? 'hidden' : ''}`}
+                                className={` h-14 w-14   ${currentPage === 1 ? 'hidden' : ''}`}
                             >
-                                prev
+                                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none">
+                                    <path d="M14.293 16.9496L8.58603 11.2426L14.293 5.53564L15.707 6.94964L11.414 11.2426L15.707 15.5356L14.293 16.9496Z" fill="#4E4E4E" />
+                                </svg>
                             </button>
                         </div> 
                         {/* show page numbers */}
@@ -375,7 +377,7 @@ const App = ({ event, }) => {
                             <button
                                 key={idx}
                                 onClick={(e) => { changePage(e); console.log("pagiantion group", getPaginationGroup(sortedMeetings), currentPage, item, idx ) } }
-                                className={`h-14 w-14 rounded-full ${currentPage === item ? 'bg-[#4D4D4D] text-white' : 'text-black bg-[#f6a24a]'}`}
+                                className={`h-12 w-12 md:h-14 md:w-14 rounded-full ${currentPage === item ? 'bg-[#4D4D4D] text-white' : 'text-black bg-[#f6a24a]'}`}
                             >
                                 {item}
                             </button>
@@ -384,9 +386,11 @@ const App = ({ event, }) => {
                             {/* next button */}
                             <button
                                 onClick={() => { goToNextPage() }}
-                                className={`bg-[#4D4D4D] text-white hover:text-black hover:bg-[#f6a24a] h-14 w-14 rounded-full ${currentPage === pages ? 'hidden' : ''}`}
+                                className={` h-14 w-14  ${currentPage === pages ? 'hidden' : ''}`}
                             >
-                                next
+                                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none">
+                                    <path d="M9.70697 16.9496L15.414 11.2426L9.70697 5.53564L8.29297 6.94964L12.586 11.2426L8.29297 15.5356L9.70697 16.9496Z" fill="#4E4E4E" />
+                                </svg>
                             </button>
                         </div>
                     </div>
