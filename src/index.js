@@ -272,7 +272,9 @@ const App = ({ event, }) => {
                                                             </time>
                                                         </div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
-                                                            <p className='md:text-lg text-md'>Sted:</p>
+                                                            {meeting?.['hvis-fysisk-lokalisasjon'] && (
+                                                                <p className='md:text-lg text-md'>Sted:</p>
+                                                            )}
                                                             <p className='text-xs leading-6 md:text-sm md:leading-7'>{meeting?.['hvis-fysisk-lokalisasjon']}</p>
                                                         </div>
                                                     </div>    
