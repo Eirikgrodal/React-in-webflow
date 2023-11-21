@@ -707,14 +707,38 @@ const App = ({ event, }) => {
                         flag = true
                     }
                 }
-                
+
                 if (selectedMounth === startMounth && selectedMounth === endMounth) {
                     if (selectedDato === startDato && selectedDato === endDato) {
                         flag = true
                     }
                 }
             }
-            
+            // if (selectedYear > startYear && selectedYear === endYear) {
+            //     if (selectedMounth < endMounth) {
+            //         flag = true
+            //     }
+            //     if (selectedMounth === endMounth) {
+            //         if (selectedDato <= endDato) {
+            //             flag = true
+            //         }
+            //     }
+
+            // }
+
+            // if (selectedYear === startYear && selectedYear < endYear) {
+            //     if (selectedMounth > startMounth) {
+            //         flag = true
+            //     }
+            //     if (selectedMounth === startMounth) {
+            //         if (selectedDato >= startDato) {
+            //             flag = true
+            //         }
+            //     }
+            // }
+            // if (selectedYear > startYear && selectedYear < endYear) {
+            //     flag = true
+            // }
         })
         return flag
     };
