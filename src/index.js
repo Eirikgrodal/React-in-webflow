@@ -181,6 +181,8 @@ const App = ({ event, }) => {
     function RenderMeetings({ meetings, visibleMeetings }) {
         const [sortedMeetings, setSortedMeetings] = useState(meetings)
         console.log('sortedMeetings', sortedMeetings)
+
+        
         useEffect(() => {
             if (!filterDato && filterText === 'Fra idag') {
                 const sortedMeetingsTemp = events?.items && events?.items
@@ -209,12 +211,6 @@ const App = ({ event, }) => {
         function goToNextPage() {
             setCurrentPage((currentPage) => currentPage + 1);
 
-            // const startIndex = currentPage * visibleMeetings;
-            // const endIndex = startIndex + visibleMeetings;
-
-            // const nextPage = sortedMeetings.slice(startIndex, endIndex, );
-
-            // setSortedMeetings(nextPage);
         }
 
         function goToPreviousPage() {
@@ -229,7 +225,13 @@ const App = ({ event, }) => {
         }
         function renderTeporaryMeetings(num = currentPage) {
             console.log('num', num)
-            const newMeetingsTemp = meetings && meetings?.slice(num * pageLimit - pageLimit, num * pageLimit)
+            const newsortedMeetingsTemp = events.items && events.items
+                .filter((meeting) => !meeting._draft) // Exclude draft meetings
+                .filter((meeting) => meeting['slutt-dato'] >= new Date().toISOString())
+                .sort((a, b) => new Date(a['start-dato']) - new Date(b['start-dato'])); // Sort by start date, newest to oldest
+            const newMeetingsTemp = meetings && meetings && meetings?.filter((meeting) => !meeting._draft) // Exclude draft meetings
+                .filter((meeting) => meeting['slutt-dato'] >= new Date().toISOString())
+                .sort((a, b) => new Date(a['start-dato']) - new Date(b['start-dato'])).slice(num * pageLimit - pageLimit, num * pageLimit)
             setSortedMeetings(newMeetingsTemp)
         }
 
