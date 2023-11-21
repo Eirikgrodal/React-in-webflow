@@ -37,7 +37,8 @@ const App = ({ event, }) => {
     const [filterDato, setFilterDato] = useState(false);
     const meetingsPerPage = 3;
     
-
+    
+    
     // useEffect(() => {
     //     if (meetings && meetings.length > 0) {
     //         const sortedMeetings = meetings
@@ -67,14 +68,14 @@ const App = ({ event, }) => {
     // }, [])
 
 
-    const handleLoadMore = () => {
-        const totalMeetings = events?.items.length || 0;
-        const newVisibleMeetings = Math.min(
-            visibleMeetings + meetingsPerPage,
-            totalMeetings
-        );
-        setVisibleMeetings(newVisibleMeetings);
-    };
+    // const handleLoadMore = () => {
+    //     const totalMeetings = events?.items.length || 0;
+    //     const newVisibleMeetings = Math.min(
+    //         visibleMeetings + meetingsPerPage,
+    //         totalMeetings
+    //     );
+    //     setVisibleMeetings(newVisibleMeetings);
+    // };
 
 
 
@@ -183,6 +184,7 @@ const App = ({ event, }) => {
 
     function RenderMeetings({ meetings, visibleMeetings }) {
         const [sortedMeetings, setSortedMeetings] = useState(meetings)
+        console.log('sortedMeetings', sortedMeetings)
         useEffect(() => {
             if (!filterDato && filterText === 'Fra idag') {
                 const sortedMeetingsTemp = events?.items && events?.items
@@ -193,32 +195,59 @@ const App = ({ event, }) => {
                 const slicedMeetings = sortedMeetingsTemp && sortedMeetingsTemp.slice(0, visibleMeetings);
                 setSortedMeetings(slicedMeetings);
             }
-            if (!filterDato && filterText === 'Sist Publisert') {
-                const sortedMeetingsTemp = events?.items && events?.items
-                    .filter((meeting) => !meeting._draft) // Exclude draft meetings
-                    .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
-
-                const slicedMeetings = sortedMeetingsTemp && sortedMeetingsTemp.slice(0, visibleMeetings);
-                setSortedMeetings(slicedMeetings);
-            }
-
-            if (!filterDato && filterText === 'Tidligere Arrangementer') {
-                const sortedMeetingsTemp = events?.items && events?.items
-                    .filter((meeting) => !meeting._draft) // Exclude draft meetings
-                    .filter((meeting) => meeting['slutt-dato'] <= new Date().toISOString())
-                    .sort((a, b) => new Date(b['start-dato']) - new Date(a['start-dato'])); // Sort by start date, newest to oldest
-
-                const slicedMeetings = sortedMeetingsTemp && sortedMeetingsTemp.slice(0, visibleMeetings);
-                setSortedMeetings(slicedMeetings);
-            }
-
-
             if (meetings && meetings.length > 0 && filterDato) {
                 const slicedMeetings = meetings.slice(0, visibleMeetings);
                 setSortedMeetings(slicedMeetings);
             }
 
         }, [])
+        
+        const [pages] = useState(Math.ceil(meetings.length / visibleMeetings));        
+        const [currentPage, setCurrentPage] = useState(1);
+        const pageLimit = 3;
+
+        useEffect(()=> {
+            renderTeporaryMeetings(currentPage) 
+        }, [currentPage])
+
+        function goToNextPage() {
+            setCurrentPage((currentPage) => currentPage + 1);
+
+            // const startIndex = currentPage * visibleMeetings;
+            // const endIndex = startIndex + visibleMeetings;
+
+            // const nextPage = sortedMeetings.slice(startIndex, endIndex, );
+
+            // setSortedMeetings(nextPage);
+        }
+
+        function goToPreviousPage() {
+            setCurrentPage((currentPage) => currentPage - 1);
+            
+        }
+
+        function changePage(event) {
+            console.log('event', event)
+            const pageNumber = Number(event?.target?.innerText);
+            setCurrentPage(pageNumber);
+        }
+        function renderTeporaryMeetings(num = currentPage) {
+            console.log('num', num)
+            const newMeetingsTemp = meetings && meetings?.slice(num * pageLimit - pageLimit, num * pageLimit)
+            setSortedMeetings(newMeetingsTemp)
+        }
+
+        const getPaginatedData = () => {
+            const startIndex = (currentPage - 1) * visibleMeetings;
+            const endIndex = startIndex + visibleMeetings;
+            return sortedMeetings.slice(startIndex, endIndex);
+        };
+
+        const getPaginationGroup = () => {
+            let start = Math.floor((currentPage - 1) / pageLimit) * pageLimit;
+            return new Array(pageLimit).fill().map((_, idx) => start + idx + 1);
+        };
+
         // const newMeetings = meetings.filter((meeting) => {
         //     if (meeting['start-dato']>= new Date().toISOString()) {
         //         return meeting
@@ -334,16 +363,46 @@ const App = ({ event, }) => {
                             })
                     )}
                 </ol>
-                <div>
-                    {meetings && meetings.length > 3 && (
+                {meetings.length > 3 && <div className="w-full">
+                    <div div className="w-full flex justify-between pt-10">
+                        {/* previous button */}
+                        <div className='h-14 w-14'>
+                            <button
+                                onClick={() => { goToPreviousPage() }}
+                                className={`bg-[#4D4D4D] text-white hover:text-black hover:bg-[#f6a24a] h-14 w-14 rounded-full ${currentPage === 1 ? 'hidden' : ''}`}
+                            >
+                                prev
+                            </button>
+                        </div> 
+                        {/* show page numbers */}
+                        {getPaginationGroup(sortedMeetings).map((item, idx) => (
+                            <button
+                                key={idx}
+                                onClick={(e) => { changePage(e); console.log("pagiantion group", getPaginationGroup(sortedMeetings), currentPage, item, idx ) } }
+                                className={`h-14 w-14 rounded-full ${currentPage === item ? 'bg-[#4D4D4D] text-white' : 'text-black bg-[#f6a24a]'}`}
+                            >
+                                {item}
+                            </button>
+                        ))}
+                        <div className='h-14 w-14'>
+                            {/* next button */}
+                            <button
+                                onClick={() => { goToNextPage() }}
+                                className={`bg-[#4D4D4D] text-white hover:text-black hover:bg-[#f6a24a] h-14 w-14 rounded-full ${currentPage === pages ? 'hidden' : ''}`}
+                            >
+                                next
+                            </button>
+                        </div>
+                    </div>
+                    {/* {meetings && meetings.length > 3 && (
                         <button
                             className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black px-6 py-4 rounded-md"
                             onClick={handleLoadMore}
                         >
                             Last mere
                         </button>
-                    )}
-                </div>
+                    )} */}
+                </div>}
             </div>
         );
     };
@@ -552,7 +611,7 @@ const App = ({ event, }) => {
                             })
                     )}
                 </ol>
-                <div>
+                {/* <div>
                     {meetings.length > 2 && (
                         <button
                             className="mt-4 bg-[#f6a24a]  hover:bg-[#ABA6FB] text-black px-6 py-4 rounded-md"
@@ -561,10 +620,11 @@ const App = ({ event, }) => {
                             Load More
                         </button>
                     )}
-                </div>
+                </div> */}
             </div>
         )
     };
+    
 
     function ShowMeetingsError() {
         return (
