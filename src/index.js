@@ -317,7 +317,7 @@ const App = ({ event, }) => {
                                                 </div>
                                             </div>
                                             <div className='md:flex md:flex-col-reverse '>
-                                                <p className='text-xs md:w-[151px] text-start' src={meeting?.bilde?.url}>Program og påmelding <span className='pl-2'>➔</span></p>
+                                                <p className='text-xs lg:w-[180px] md:w-[151px] text-start' src={meeting?.bilde?.url}>Program og påmelding <span className='pl-2'>➔</span></p>
 
                                             </div>
                                             {/* <Menu as="div" className="absolute top-6 right-0 xl:relative xl:top-auto xl:right-auto xl:self-center">
@@ -423,7 +423,7 @@ const App = ({ event, }) => {
                                                 </div>
                                             </div>
                                             <div className='md:flex md:flex-col-reverse '>
-                                                <p className='text-xs md:w-[151px] text-start' src={meeting?.bilde?.url}>Program og påmelding <span className='pl-2'>➔</span></p>
+                                                <p className='text-xs lg:w-[180px] md:w-[151px] text-start' src={meeting?.bilde?.url}>Program og påmelding <span className='pl-2'>➔</span></p>
 
                                             </div>
                                             {/* <Menu as="div" className="absolute top-6 right-0 xl:relative xl:top-auto xl:right-auto xl:self-center">
