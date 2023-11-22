@@ -280,14 +280,14 @@ const App = ({ event, }) => {
                                                     <h3 className="md:pl-2 text-left md:text-xl text-md md:leading-7 leading-5 font-semibold text-gray-900 ">{meeting.name}</h3>
                                                     <div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
-                                                            <p className='md:text-lg text-md'>Date:</p>
+                                                            <p className='md:text-lg text-md'>NÅR:</p>
                                                             <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
                                                             {getDateAndTime(meeting['start-dato'])}
                                                             </time>
                                                         </div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
                                                             {meeting?.['hvis-fysisk-lokalisasjon'] && (
-                                                                <p className='md:text-lg text-md'>Sted:</p>
+                                                                <p className='md:text-lg text-md'>HVOR:</p>
                                                             )}
                                                             <p className='text-xs leading-6 md:text-sm md:leading-7'>{meeting?.['hvis-fysisk-lokalisasjon']}</p>
                                                         </div>
@@ -386,14 +386,14 @@ const App = ({ event, }) => {
                                                     <h3 className="md:pl-2 text-left md:text-xl text-md md:leading-7 leading-5 font-semibold text-gray-900 ">{meeting.name}</h3>
                                                     <div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
-                                                            <p className='md:text-lg text-md'>Date:</p>
+                                                            <p className='md:text-lg text-md'>NÅR:</p>
                                                             <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
                                                                 {getDateAndTime(meeting['start-dato'])}
                                                             </time>
                                                         </div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
                                                             {meeting?.['hvis-fysisk-lokalisasjon'] && (
-                                                                <p className='md:text-lg text-md'>Sted:</p>
+                                                                <p className='md:text-lg text-md'>HVOR:</p>
                                                             )}
                                                             <p className='text-xs leading-6 md:text-sm md:leading-7'>{meeting?.['hvis-fysisk-lokalisasjon']}</p>
                                                         </div>
