@@ -36,6 +36,7 @@ const App = ({ event, }) => {
     const [filterText, setFilterText] = useState('Fra idag');
     const [filterDato, setFilterDato] = useState(false);
     const meetingsPerPage = 3;
+    const [kalenderFilterd, setkalenderFilterd] = useState(false);
     
     
     
@@ -80,6 +81,7 @@ const App = ({ event, }) => {
 
 
     const handleClearFilter = () => {
+        setkalenderFilterd(false);
         setVisibleMeetings(3);
         setMeetings(events?.items
             .filter((meeting) => !meeting._draft) // Exclude draft meetings
@@ -158,7 +160,7 @@ const App = ({ event, }) => {
         );
 
 
-
+        setkalenderFilterd(true);
         setFilterDato(true)
 
     };
@@ -178,11 +180,16 @@ const App = ({ event, }) => {
         setFilterText('Tidligere Arrangementer')
     };
 
-    function RenderMeetings({ meetings, visibleMeetings }) {
-        const [sortedMeetings, setSortedMeetings] = useState(meetings)
-        console.log('sortedMeetings', sortedMeetings)
+    const sortedMeetings = meetings
+        .filter((meeting) => !meeting._draft)
+        .filter((meeting) => meeting['slutt-dato'] >= new Date().toISOString())
+        .sort((a, b) => new Date(a['start-dato']) - new Date(b['start-dato']));
+       
+    
 
-        
+
+    function standarSortedMeetings() {
+        const [sortedMeetings, setSortedMeetings] = useState(meetings)
         useEffect(() => {
             if (!filterDato && filterText === 'Fra idag') {
                 const sortedMeetingsTemp = events?.items && events?.items
@@ -199,6 +206,16 @@ const App = ({ event, }) => {
             }
 
         }, [])
+
+        return (standarSortedMeetings)
+    };    
+
+    function RenderMeetings({ meetings, visibleMeetings, kalenderMeetings, kalenderFilterd }) {
+        const [sortedMeetings, setSortedMeetings] = useState(meetings)
+        const [sortedKalenderMeetings, setSortedKalenderMeetings] = useState(meetings)
+        console.log('sortedMeetings', sortedMeetings);
+        console.log('kalenderFilterd', kalenderFilterd);
+ 
         
         const [pages] = useState(Math.ceil(meetings.length / visibleMeetings));        
         const [currentPage, setCurrentPage] = useState(1);
@@ -226,12 +243,7 @@ const App = ({ event, }) => {
         function renderTeporaryMeetings(num = currentPage) {
             console.log('num', num)
             const newsortedMeetingsTemp = events.items && events.items
-                .filter((meeting) => !meeting._draft) // Exclude draft meetings
-                .filter((meeting) => meeting['slutt-dato'] >= new Date().toISOString())
-                .sort((a, b) => new Date(a['start-dato']) - new Date(b['start-dato'])); // Sort by start date, newest to oldest
-            const newMeetingsTemp = meetings && meetings && meetings?.filter((meeting) => !meeting._draft) // Exclude draft meetings
-                .filter((meeting) => meeting['slutt-dato'] >= new Date().toISOString())
-                .sort((a, b) => new Date(a['start-dato']) - new Date(b['start-dato'])).slice(num * pageLimit - pageLimit, num * pageLimit)
+            const newMeetingsTemp = meetings && meetings && meetings?.slice(num * pageLimit - pageLimit, num * pageLimit)
             setSortedMeetings(newMeetingsTemp)
         }
 
@@ -256,7 +268,7 @@ const App = ({ event, }) => {
                 <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
                     {loading && <p>Loading...</p>}
                     {error && <p>Error: {error.message}</p>}
-                    {meetings && sortedMeetings && (
+                    {meetings && sortedMeetings && kalenderFilterd === false ? (
                         sortedMeetings
                             .map((meeting) => {
                                 return (
@@ -361,7 +373,113 @@ const App = ({ event, }) => {
                                     </li>
                                 );
                             })
-                    )}
+                    ) : null}
+                    {meetings && kalenderMeetings && kalenderFilterd ? (
+                        kalenderMeetings
+                            .map((meeting) => {
+                                return (
+                                    <li key={meeting?.id} className="relative  ">
+                                        <a className='flex flex-col md:flex-row  justify-between py-6 xl:static cursor-pointer border-b-[1px] border-[#F9BB7A]' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
+                                            <div className='flex md:space-x-6 xl:max-w-none md:max-w-lg flex-col md:flex-row'>
+                                                <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="md:h-[150px] md:w-[150px] h-[50vw] w-full object-cover flex-none rounded-xl" />
+                                                <div className="flex flex-col justify-between md:h-[100px] py-4 ">
+                                                    <h3 className="md:pl-2 text-left md:text-xl text-md md:leading-7 leading-5 font-semibold text-gray-900 ">{meeting.name}</h3>
+                                                    <div>
+                                                        <div className='md:pl-2 flex flex-row gap-1 '>
+                                                            <p className='md:text-lg text-md'>Date:</p>
+                                                            <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
+                                                                {getDateAndTime(meeting['start-dato'])}
+                                                            </time>
+                                                        </div>
+                                                        <div className='md:pl-2 flex flex-row gap-1 '>
+                                                            {meeting?.['hvis-fysisk-lokalisasjon'] && (
+                                                                <p className='md:text-lg text-md'>Sted:</p>
+                                                            )}
+                                                            <p className='text-xs leading-6 md:text-sm md:leading-7'>{meeting?.['hvis-fysisk-lokalisasjon']}</p>
+                                                        </div>
+                                                    </div>
+                                                    {/* <dl className="mt-2 flex flex-col text-left text-gray-500 xl:flex-row">
+                                                        <div className="text-left flex items-start space-x-3">
+                                                            <dt className="mt-0.5">
+                                                                <span className="sr-only">Date</span>
+                                                                
+                                                            </dt>
+                                                            <dd className='ml-0 text-lg'>
+                                                                <time dateTime={meeting['start-dato']}>
+                                                                    {getDateAndTime(meeting['start-dato'])}
+                                                                </time>
+                                                                <time dateTime={meeting['start-dato']}>
+                                                                    {' - ' + getDateAndTime(meeting['slutt-dato'])}
+                                                                </time>
+                                                            </dd>
+                                                        </div>
+                                                        <div className="mt-2 flex items-start space-x-3 xl:mt-0 xl:ml-3.5 xl:border-l xl:border-gray-400 xl:border-opacity-50 xl:pl-3.5">
+                                                            <dt className="mt-0.5">
+                                                                <span className="sr-only">Location</span>
+                                                            </dt>
+                                                            <dd>{meeting?.['hvis-fysisk-lokalisasjon']}</dd>
+                                                        </div>
+                                                    </dl> */}
+                                                </div>
+                                            </div>
+                                            <div className='md:flex md:flex-col-reverse '>
+                                                <p className='text-xs md:w-[151px] text-start' src={meeting?.bilde?.url}>Program og påmelding <span className='pl-2'>➔</span></p>
+
+                                            </div>
+                                            {/* <Menu as="div" className="absolute top-6 right-0 xl:relative xl:top-auto xl:right-auto xl:self-center">
+                                                <div>
+                                                    <Menu.Button className="-m-2 flex items-center rounded-full p-2 text-gray-500 hover:text-gray-600">
+                                                        <span className="sr-only">Open options</span>
+                                                        
+                                                    </Menu.Button>
+                                                </div>
+
+                                                <Transition
+                                                    as={Fragment}
+                                                    enter="transition ease-out duration-100"
+                                                    enterFrom="transform opacity-0 scale-95"
+                                                    enterTo="transform opacity-100 scale-100"
+                                                    leave="transition ease-in duration-75"
+                                                    leaveFrom="transform opacity-100 scale-100"
+                                                    leaveTo="transform opacity-0 scale-95"
+                                                >
+                                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                        <div className="py-1">
+                                                            <Menu.Item>
+                                                                {({ active }) => (
+                                                                    <a
+                                                                        href="#"
+                                                                        className={classNames(
+                                                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                                            'block px-4 py-2 text-sm'
+                                                                        )}
+                                                                    >
+                                                                        Edit
+                                                                    </a>
+                                                                )}
+                                                            </Menu.Item>
+                                                            <Menu.Item>
+                                                                {({ active }) => (
+                                                                    <a
+                                                                        href="#"
+                                                                        className={classNames(
+                                                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                                            'block px-4 py-2 text-sm'
+                                                                        )}
+                                                                    >
+                                                                        Cancel
+                                                                    </a>
+                                                                )}
+                                                            </Menu.Item>
+                                                        </div>
+                                                    </Menu.Items>
+                                                </Transition>
+                                            </Menu> */}
+                                        </a>
+                                    </li>
+                                );
+                            })
+                    ) : null}
                 </ol>
                 {meetings.length > 3 && <div className="w-full">
                     <div div className="w-full flex justify-between pt-10">
@@ -790,7 +908,7 @@ const App = ({ event, }) => {
                         Tidligere Arrangementer
                     </button>
                 </div> */}
-                <RenderMeetings meetings={meetings} visibleMeetings={visibleMeetings} />
+                <RenderMeetings kalenderMeetings={meetings} meetings={sortedMeetings} visibleMeetings={visibleMeetings} kalenderFilterd={kalenderFilterd} />
                 {/* {visibleShowAllMeetings && <ShowAllMeetings /> || null} 
                 {visibleShowOldEventsMeetings && <ShowOldEventsMeetings /> || null}  */}
             </div>
