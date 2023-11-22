@@ -495,15 +495,17 @@ const App = ({ event, }) => {
                             </button>
                         </div> 
                         {/* show page numbers */}
-                        {getPaginationGroup(sortedMeetings).map((item, idx) => (
-                            <button
-                                key={idx}
-                                onClick={(e) => { changePage(e); console.log("pagiantion group", getPaginationGroup(sortedMeetings), currentPage, item, idx ) } }
-                                className={`h-12 w-12 md:h-14 md:w-14 rounded-full ${currentPage === item ? 'bg-[#4D4D4D] text-white' : 'text-black bg-[#f6a24a]'}`}
-                            >
-                                {item}
-                            </button>
-                        ))}
+                        <div className="flex justify-center md:gap-8 gap-4">
+                            {getPaginationGroup(sortedMeetings).map((item, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={(e) => { changePage(e); console.log("pagiantion group", getPaginationGroup(sortedMeetings), currentPage, item, idx ) } }
+                                    className={`h-12 w-12 md:h-14 md:w-14 rounded-full ${currentPage === item ? 'bg-[#4D4D4D] text-white' : 'text-black bg-[#f6a24a]'}`}
+                                >
+                                    {item}
+                                </button>
+                            ))}
+                        </div>
                         <div className='h-14 w-14'>
                             {/* next button */}
                             <button
