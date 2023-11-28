@@ -182,9 +182,8 @@ const App = ({ event, }) => {
 
     const sortedMeetings = meetings
         .filter((meeting) => !meeting._draft)
-        .filter((meeting) => meeting['slutt-dato'] >= new Date().toISOString())
+        .filter((meeting) => meeting['start-dato'] >= new Date().toISOString())
         .sort((a, b) => new Date(a['start-dato']) - new Date(b['start-dato']));
-       
     
 
 
@@ -277,17 +276,17 @@ const App = ({ event, }) => {
                                             <div className='flex md:space-x-6 xl:max-w-none md:max-w-lg flex-col md:flex-row'>
                                                 <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="md:h-[150px] md:w-[150px] h-[50vw] w-full object-cover flex-none rounded-xl" />
                                                 <div className="flex flex-col justify-between md:h-[100px] py-4 ">
-                                                    <h3 className="md:pl-2 text-left md:text-xl text-md md:leading-7 leading-5 font-semibold text-gray-900 ">{meeting.name}</h3>
+                                                    <h3 className="mb-2 md:pl-2 text-left md:text-xl text-md md:leading-7 leading-5 font-semibold text-gray-900 ">{meeting.name}</h3>
                                                     <div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
-                                                            <p className='md:text-lg text-md'>NÅR:</p>
+                                                            <p className='text-xs leading-6 md:text-sm md:leading-7'>NÅR:</p>
                                                             <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
                                                             {getDateAndTime(meeting['start-dato'])}
                                                             </time>
                                                         </div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
                                                             {meeting?.['hvis-fysisk-lokalisasjon'] && (
-                                                                <p className='md:text-lg text-md'>HVOR:</p>
+                                                                <p className='text-xs leading-6 md:text-sm md:leading-7'>HVOR:</p>
                                                             )}
                                                             <p className='text-xs leading-6 md:text-sm md:leading-7'>{meeting?.['hvis-fysisk-lokalisasjon']}</p>
                                                         </div>
@@ -383,17 +382,17 @@ const App = ({ event, }) => {
                                             <div className='flex md:space-x-6 xl:max-w-none md:max-w-lg flex-col md:flex-row'>
                                                 <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="md:h-[150px] md:w-[150px] h-[50vw] w-full object-cover flex-none rounded-xl" />
                                                 <div className="flex flex-col justify-between md:h-[100px] py-4 ">
-                                                    <h3 className="md:pl-2 text-left md:text-xl text-md md:leading-7 leading-5 font-semibold text-gray-900 ">{meeting.name}</h3>
+                                                    <h3 className="mb-2 md:pl-2 text-left md:text-xl text-md md:leading-7 leading-5 font-semibold text-gray-900 ">{meeting.name}</h3>
                                                     <div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
-                                                            <p className='md:text-lg text-md'>NÅR:</p>
+                                                            <p className='text-xs leading-6 md:text-sm md:leading-7'>NÅR:</p>
                                                             <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
                                                                 {getDateAndTime(meeting['start-dato'])}
                                                             </time>
                                                         </div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
                                                             {meeting?.['hvis-fysisk-lokalisasjon'] && (
-                                                                <p className='md:text-lg text-md'>HVOR:</p>
+                                                                <p className='text-xs leading-6 md:text-sm md:leading-7'>HVOR:</p>
                                                             )}
                                                             <p className='text-xs leading-6 md:text-sm md:leading-7'>{meeting?.['hvis-fysisk-lokalisasjon']}</p>
                                                         </div>
@@ -500,7 +499,7 @@ const App = ({ event, }) => {
                                 <button
                                     key={idx}
                                     onClick={(e) => { changePage(e); console.log("pagiantion group", getPaginationGroup(sortedMeetings), currentPage, item, idx ) } }
-                                    className={`h-12 w-12 md:h-14 md:w-14 rounded-full ${currentPage === item ? 'bg-[#4D4D4D] text-white' : 'text-black bg-[#f6a24a]'}`}
+                                    className={`h-12 w-12 md:h-14 md:w-14 rounded-full ${item <= pages ? '' : 'hidden'} ${currentPage === item ? 'bg-[#4D4D4D] text-white' : 'text-black bg-[#f6a24a]'}`}
                                 >
                                     {item}
                                 </button>
@@ -1011,7 +1010,7 @@ const App = ({ event, }) => {
                     <div className='m-4'>
 
                         <button
-                            className="mt-4 bg-[#4D4D4D] text-white hover:text-black hover:bg-[#f6a24a] px-6 py-4 rounded-md"
+                            className="mt-4 bg-[#4D4D4D] text-white hover:text-black hover:bg-[#f6a24a] px-5 py-3 rounded-md"
                             onClick={handleClearFilter}
                         >
                             Nullstill filter
