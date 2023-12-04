@@ -84,8 +84,8 @@ const App = ({ event, }) => {
         setkalenderFilterd(false);
         setVisibleMeetings(3);
         setMeetings(events?.items
-            .filter((meeting) => !meeting._draft) // Exclude draft meetings
-            .filter((meeting) => meeting['slutt-dato'] >= new Date().toISOString())
+            .filter((meeting) => !meeting._draft)
+            .filter((meeting) => meeting['start-dato'] >= new Date().toISOString())
             .sort((a, b) => new Date(a['start-dato']) - new Date(b['start-dato']))// Sort by start date, newest to oldest
         );
         // const sortedMeetings = events.items
@@ -212,8 +212,8 @@ const App = ({ event, }) => {
     function RenderMeetings({ meetings, visibleMeetings, kalenderMeetings, kalenderFilterd }) {
         const [sortedMeetings, setSortedMeetings] = useState(meetings)
         const [sortedKalenderMeetings, setSortedKalenderMeetings] = useState(meetings)
-        console.log('sortedMeetings', sortedMeetings);
-        console.log('kalenderFilterd', kalenderFilterd);
+        // console.log('sortedMeetings', sortedMeetings);
+        // console.log('kalenderFilterd', kalenderFilterd);
  
         
         const [pages] = useState(Math.ceil(meetings.length / visibleMeetings));        
@@ -235,12 +235,12 @@ const App = ({ event, }) => {
         }
 
         function changePage(event) {
-            console.log('event', event)
+            // console.log('event', event)
             const pageNumber = Number(event?.target?.innerText);
             setCurrentPage(pageNumber);
         }
         function renderTeporaryMeetings(num = currentPage) {
-            console.log('num', num)
+            // console.log('num', num)
             const newsortedMeetingsTemp = events.items && events.items
             const newMeetingsTemp = meetings && meetings && meetings?.slice(num * pageLimit - pageLimit, num * pageLimit)
             setSortedMeetings(newMeetingsTemp)
@@ -498,7 +498,7 @@ const App = ({ event, }) => {
                             {getPaginationGroup(sortedMeetings).map((item, idx) => (
                                 <button
                                     key={idx}
-                                    onClick={(e) => { changePage(e); console.log("pagiantion group", getPaginationGroup(sortedMeetings), currentPage, item, idx ) } }
+                                    onClick={(e) => { changePage(e); } }
                                     className={`h-12 w-12 md:h-14 md:w-14 rounded-full ${item <= pages ? '' : 'hidden'} ${currentPage === item ? 'bg-[#4D4D4D] text-white' : 'text-black bg-[#f6a24a]'}`}
                                 >
                                     {item}
@@ -814,7 +814,7 @@ const App = ({ event, }) => {
         const selectedYear = parseInt(extractYear(selectedDate))
         const selectedMounth = parseInt(extractMonth(selectedDate))
         const selectedDato = parseInt(extractAndModifySubstring(selectedDate))
-        events && events?.items?.map((meeting) => {
+        events && events?.items?.filter((meeting) => !meeting._draft).map((meeting) => {
             const startYear = parseInt(extractYear(meeting['start-dato']))
             const startMounth = parseInt(extractMonth(meeting['start-dato']))
             const startDato = parseInt(extractAndModifySubstring(meeting['start-dato']))
