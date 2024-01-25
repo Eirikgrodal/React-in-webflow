@@ -25,7 +25,7 @@ export default function useStore() {
   const [error, setError] = useState(null);
   const fetchData = async () => {
     try {
-      await axios(`https://vindel.vercel.app/api/events`).then(res => { console.log(res.data.items); setEvents(res.data); setMeetings(res.data.items) })
+      await axios(`https://vindel.vercel.app/api/events`).then(res => { setEvents(res.data); setMeetings(res.data.items) })
       setLoading(false);
     } catch (error) {
       setError(error);

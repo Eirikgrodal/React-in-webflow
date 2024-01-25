@@ -262,7 +262,6 @@ const App = ({ event, }) => {
         //         return meeting
         //     }   
         // }).sort((a, b) => new Date(a['start-dato']) - Date(b['start-dato']));
-        console.log("meetings", meetings)
         return (
             <div>
                 <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
