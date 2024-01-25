@@ -274,9 +274,9 @@ const App = ({ event, }) => {
                                     <li key={meeting?.id} className="relative  ">
                                         <a className='flex flex-col md:flex-row  justify-between py-6 xl:static cursor-pointer border-b-[1px] border-[#F9BB7A]' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
                                             <div className='flex md:space-x-6 xl:max-w-none md:max-w-lg flex-col md:flex-row'>
-                                                <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="md:h-[150px] md:w-[150px] h-[50vw] w-full object-cover flex-none rounded-xl" />
+                                                <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="md:h-[150px] md:w-[150px] h-[50vw] w-full object-cover flex-none self-center rounded-xl" />
                                                 <div className="flex flex-col justify-between py-4 ">
-                                                    <h3 className=" mb-2 md:pl-2 text-left md:text-xl text-md md:leading-7 leading-5 font-semibold text-gray-900 ">{meeting.name}</h3>
+                                                    <h3 className=" mb-2 md:pl-2 text-left md:text-xl text-md md:leading-7 leading-5 font-semibold text-gray-900 ">{meeting.name}fejbnvg'okjefvjtbjbvinaefihjbvlwhjrbvkljgrbnlkjfnvlkjfnbvhdflvhvkdf</h3>
                                                     <div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
                                                             <p className='text-xs leading-6 md:text-sm md:leading-7'>NÅR:</p>
@@ -386,7 +386,7 @@ const App = ({ event, }) => {
                                     <li key={meeting?.id} className="relative  ">
                                         <a className='flex flex-col md:flex-row  justify-between py-6 xl:static cursor-pointer border-b-[1px] border-[#F9BB7A]' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
                                             <div className='flex md:space-x-6 xl:max-w-none md:max-w-lg flex-col md:flex-row'>
-                                                <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="md:h-[150px] md:w-[150px] h-[50vw] w-full object-cover flex-none rounded-xl" />
+                                                <img src={meeting?.bilde?.url} alt={meeting?.bilde?.alt} className="md:h-[150px] md:w-[150px] h-[50vw] w-full object-cover self-center flex-none rounded-xl" />
                                                 <div className="flex flex-col justify-between py-4 ">
                                                     <h3 className="mb-2 md:pl-2 text-left md:text-xl text-md md:leading-7 leading-5 font-semibold text-gray-900 ">{meeting.name}</h3>
                                                     <div>
