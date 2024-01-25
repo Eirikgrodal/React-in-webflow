@@ -262,6 +262,7 @@ const App = ({ event, }) => {
         //         return meeting
         //     }   
         // }).sort((a, b) => new Date(a['start-dato']) - Date(b['start-dato']));
+        console.log("meetings", meetings)
         return (
             <div>
                 <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
@@ -280,9 +281,15 @@ const App = ({ event, }) => {
                                                     <div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
                                                             <p className='text-xs leading-6 md:text-sm md:leading-7'>NÅR:</p>
-                                                            <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
-                                                            {getDateAndTime(meeting['start-dato'])}
-                                                            </time>
+                                                            <div className='flex flex-row flex-wrap'>
+                                                                <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
+                                                                    {getDateAndTime(meeting['start-dato'])}
+                                                                </time>
+                                                                {meeting?.['flere-dager'] && (<span className='text-xs leading-6 md:text-sm md:leading-7 mx-1'>- </span>)}
+                                                                {meeting?.['flere-dager'] && (<time className=' text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['slutt-dato']}>
+                                                                    {getDateAndTime(meeting['slutt-dato'])}
+                                                                </time>)}
+                                                            </div>
                                                         </div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
                                                             {meeting?.['hvis-fysisk-lokalisasjon'] && (
@@ -386,9 +393,15 @@ const App = ({ event, }) => {
                                                     <div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
                                                             <p className='text-xs leading-6 md:text-sm md:leading-7'>NÅR:</p>
-                                                            <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
-                                                                {getDateAndTime(meeting['start-dato'])}
-                                                            </time>
+                                                            <div className='flex flex-row flex-wrap'>
+                                                                <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
+                                                                    {getDateAndTime(meeting['start-dato'])}
+                                                                </time>
+                                                                {meeting?.['flere-dager'] && (<span className='text-xs leading-6 md:text-sm md:leading-7 mx-1'>- </span>)}
+                                                                {meeting?.['flere-dager'] && (<time className=' text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['slutt-dato']}>
+                                                                    {getDateAndTime(meeting['slutt-dato'])}
+                                                                </time>)}
+                                                            </div>
                                                         </div>
                                                         <div className='md:pl-2 flex flex-row gap-1 '>
                                                             {meeting?.['hvis-fysisk-lokalisasjon'] && (
