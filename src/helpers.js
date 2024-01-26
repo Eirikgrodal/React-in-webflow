@@ -323,6 +323,12 @@ export function getDateAndTime(date) {
     return dateObject.toLocaleString('no-NO', options);
 }
 
+export function getTime(date) {
+    const dateObject = new Date(date);
+    const options = { hour: 'numeric', minute: 'numeric' };
+    return dateObject.toLocaleString('no-NO', options);
+}
+
 
 export function getNorwegianMonthName(monthIndex) {
     const norwegianMonthNames = [

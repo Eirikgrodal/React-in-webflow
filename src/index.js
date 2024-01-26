@@ -5,6 +5,7 @@ import {
     classNames,
     getDayAndTime,
     getDateAndTime,
+    getTime,
     getNorwegianMonthName,
     getNorwegianDate,
     extractAndModifySubstring,
@@ -284,7 +285,10 @@ const App = ({ event, }) => {
                                                                 <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
                                                                     {getDateAndTime(meeting['start-dato'])}
                                                                 </time>
-                                                                {meeting?.['flere-dager'] && (<span className='text-xs leading-6 md:text-sm md:leading-7 mx-1'>- </span>)}
+                                                                <span className='text-xs leading-6 md:text-sm md:leading-7 mx-1'>- </span>
+                                                                {!meeting?.['flere-dager'] && (<time className=' text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['slutt-dato']}>
+                                                                    {getTime(meeting['slutt-dato'])}
+                                                                </time>)}
                                                                 {meeting?.['flere-dager'] && (<time className=' text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['slutt-dato']}>
                                                                     {getDateAndTime(meeting['slutt-dato'])}
                                                                 </time>)}
@@ -396,7 +400,10 @@ const App = ({ event, }) => {
                                                                 <time className='text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['start-dato']}>
                                                                     {getDateAndTime(meeting['start-dato'])}
                                                                 </time>
-                                                                {meeting?.['flere-dager'] && (<span className='text-xs leading-6 md:text-sm md:leading-7 mx-1'>- </span>)}
+                                                                <span className='text-xs leading-6 md:text-sm md:leading-7 mx-1'>- </span>
+                                                                {!meeting?.['flere-dager'] && (<time className=' text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['slutt-dato']}>
+                                                                    {getTime(meeting['slutt-dato'])}
+                                                                </time>)}
                                                                 {meeting?.['flere-dager'] && (<time className=' text-xs leading-6 md:text-sm md:leading-7' dateTime={meeting['slutt-dato']}>
                                                                     {getDateAndTime(meeting['slutt-dato'])}
                                                                 </time>)}
