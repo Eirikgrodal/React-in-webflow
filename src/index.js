@@ -235,27 +235,42 @@ const App = ({ event, }) => {
             
         }
 
-        function changePage(event) {
-            // console.log('event', event)
-            const pageNumber = Number(event?.target?.innerText);
+        const changePage = (event) => {
+            const pageNumber = Number(event.target.textContent);
             setCurrentPage(pageNumber);
-        }
-        function renderTeporaryMeetings(num = currentPage) {
-            // console.log('num', num)
-            const newsortedMeetingsTemp = events.items && events.items
-            const newMeetingsTemp = meetings && meetings && meetings?.slice(num * pageLimit - pageLimit, num * pageLimit)
+        };
+
+       function renderTeporaryMeetings(num = currentPage) {
+            const newMeetingsTemp = meetings && meetings?.slice(num * pageLimit - pageLimit, num * pageLimit)
             setSortedMeetings(newMeetingsTemp)
         }
 
         const getPaginatedData = () => {
-            const startIndex = (currentPage - 1) * visibleMeetings;
-            const endIndex = startIndex + visibleMeetings;
-            return sortedMeetings.slice(startIndex, endIndex);
+            return sortedMeetings;
         };
 
+        // const getPaginationGroup = () => {
+        //     let start = Math.floor((currentPage - 1) / pageLimit) * pageLimit;
+        //     return new Array(pageLimit).fill().map((_, idx) => start + idx + 1);
+        // };
+
         const getPaginationGroup = () => {
-            let start = Math.floor((currentPage - 1) / pageLimit) * pageLimit;
-            return new Array(pageLimit).fill().map((_, idx) => start + idx + 1);
+            const totalNumPages = Math.ceil(meetings.length / pageLimit);
+            const numPagesToShow = 3;
+            let startPage, endPage;
+
+            if (currentPage === 1) {
+                startPage = 1;
+                endPage = Math.min(numPagesToShow, totalNumPages);
+            } else if (currentPage === totalNumPages) {
+                startPage = Math.max(1, totalNumPages - numPagesToShow + 1);
+                endPage = totalNumPages;
+            } else {
+                startPage = Math.max(1, currentPage - Math.floor(numPagesToShow / 2));
+                endPage = Math.min(totalNumPages, currentPage + Math.floor(numPagesToShow / 2));
+            }
+
+            return [...Array((endPage + 1) - startPage).keys()].map(i => i + startPage);
         };
 
         // const newMeetings = meetings.filter((meeting) => {
