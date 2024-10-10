@@ -79,7 +79,17 @@ const App = ({ event, }) => {
     //     setVisibleMeetings(newVisibleMeetings);
     // };
 
+    function isSameOrAfter(a, b) {
+        return a.getFullYear() > b.getFullYear() ||
+            a.getFullYear() === b.getFullYear() && a.getMonth() > b.getMonth() ||
+            a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() >= b.getDate();
+    }
 
+    function isSameOrBefore(a, b) {
+        return a.getFullYear() < b.getFullYear() ||
+            a.getFullYear() === b.getFullYear() && a.getMonth() < b.getMonth() ||
+            a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() <= b.getDate();
+    }
 
     const handleClearFilter = () => {
         setkalenderFilterd(false);
@@ -160,11 +170,13 @@ const App = ({ event, }) => {
     function RenderMeetings({ meetings, visibleMeetings, kalenderMeetings, kalenderFilterd }) {
         const [sortedMeetings, setSortedMeetings] = useState(meetings)
         const [sortedKalenderMeetings, setSortedKalenderMeetings] = useState(meetings)
-        console.log('sortedMeetings', sortedMeetings);
-        console.log('kalenderFilterd', kalenderFilterd);
+        console.log('Rendermeetings sortedMeetings', sortedMeetings);
+        console.log('Rendermeetings kalenderFilterd', kalenderFilterd);
+        console.log('Rendermeetings meetings', meetings);
  
+        const meetingsToUse = kalenderFilterd ? kalenderMeetings : meetings; // Determine which list to use
         
-        const [pages] = useState(Math.ceil(meetings.length / visibleMeetings));        
+        const [pages] = useState(Math.ceil(meetingsToUse.length / visibleMeetings));        
         const [currentPage, setCurrentPage] = useState(1);
         const pageLimit = 3;
 
@@ -188,7 +200,7 @@ const App = ({ event, }) => {
         };
 
        function renderTeporaryMeetings(num = currentPage) {
-            const newMeetingsTemp = meetings && meetings?.slice(num * pageLimit - pageLimit, num * pageLimit)
+            const newMeetingsTemp = meetings && meetingsToUse?.slice(num * pageLimit - pageLimit, num * pageLimit)
             setSortedMeetings(newMeetingsTemp)
         }
 
@@ -202,7 +214,7 @@ const App = ({ event, }) => {
         // };
 
         const getPaginationGroup = () => {
-            const totalNumPages = Math.ceil(meetings.length / pageLimit);
+            const totalNumPages = Math.ceil(meetingsToUse.length / pageLimit);
             const numPagesToShow = 3;
             let startPage, endPage;
 
@@ -225,6 +237,7 @@ const App = ({ event, }) => {
         //         return meeting
         //     }   
         // }).sort((a, b) => new Date(a['start-dato']) - Date(b['start-dato']));
+        
         return (
             <div>
                 <ol className="mt-4 text-sm leading-6 lg:col-span-7 xl:col-span-8">
@@ -345,9 +358,10 @@ const App = ({ event, }) => {
                                 );
                             })
                     ) : null}
-                    {meetings && kalenderMeetings && kalenderFilterd ? (
-                        kalenderMeetings
+                    {meetings && sortedMeetings && kalenderMeetings && kalenderFilterd ? (
+                        sortedMeetings
                             .map((meeting) => {
+                                console.log('kalenderMeetings', kalenderMeetings);
                                 return (
                                     <li key={meeting?.id} className="relative  ">
                                         <a className='flex flex-col md:flex-row  justify-between py-6 xl:static cursor-pointer border-b-[1px] border-[#F9BB7A]' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
@@ -461,7 +475,7 @@ const App = ({ event, }) => {
                             })
                     ) : null}
                 </ol>
-                {meetings.length > 3 && <div className="w-full">
+                {meetingsToUse.length > 3 && <div className="w-full">
                     <div div className="w-full flex justify-between pt-10">
                         {/* previous button */}
                         <div className='h-14 w-14'>
@@ -787,17 +801,7 @@ const App = ({ event, }) => {
 
 
 
-    function isSameOrAfter(a, b) {
-        return a.getFullYear() > b.getFullYear() ||
-            a.getFullYear() === b.getFullYear() && a.getMonth() > b.getMonth() ||
-            a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() >= b.getDate();
-    }
-
-    function isSameOrBefore(a, b) {
-        return a.getFullYear() < b.getFullYear() ||
-            a.getFullYear() === b.getFullYear() && a.getMonth() < b.getMonth() ||
-            a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() <= b.getDate();
-    }
+    
 
     const isIncludedDate = (selectedDate) => {
         let flag = false;
