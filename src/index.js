@@ -97,74 +97,21 @@ const App = ({ event, }) => {
     };
 
     const handlerNewMeetings = (selectedDate) => {
-        const selectedYear = parseInt(extractYear(selectedDate))
-        const selectedMounth = parseInt(extractMonth(selectedDate))
-        const selectedDato = parseInt(extractAndModifySubstring(selectedDate))
+    const selected = selectedDate instanceof Date ? selectedDate : new Date(selectedDate);
 
-        setMeetings(events?.items?.filter((meeting) => {
-            const startYear = parseInt(extractYear(meeting['start-dato']))
-            const startMounth = parseInt(extractMonth(meeting['start-dato']))
-            const startDato = parseInt(extractAndModifySubstring(meeting['start-dato']))
+    const newMeetings = events?.items?.filter((meeting) => {
+        const start = new Date(meeting['start-dato']);
+        const end = new Date(meeting['slutt-dato']);
+        // Adjust the comparison to include the day after the meeting
+        end.setDate(end.getDate() + 1);
+        start.setDate(start.getDate() + 1);
+        return !meeting._draft && isSameOrAfter(selected, start) && isSameOrBefore(selected, end);
+    });
 
-            const endYear = parseInt(extractYear(meeting['slutt-dato']))
-            const endMounth = parseInt(extractMonth(meeting['slutt-dato']))
-            const endDato = parseInt(extractAndModifySubstring(meeting['slutt-dato']))
-
-
-
-            let indicator = false;
-
-            if (selectedYear === startYear && selectedYear === endYear) {
-                if (selectedMounth > startMounth && selectedMounth < endMounth) {
-                    indicator = true
-                }
-                if (selectedMounth === startMounth && selectedMounth === endMounth) {
-                    if (selectedDato === startDato) {
-                        indicator = true
-                    }
-                }
-                if (selectedMounth === startMounth && selectedMounth === endMounth) {
-                    if (selectedDato === endDato) {
-                        indicator = true
-                    }
-                }
-                
-            }
-            // if (selectedYear > startYear && selectedYear === endYear) {
-            //     if (selectedMounth < endMounth) {
-            //         indicator = true
-            //     }
-            //     if (selectedMounth === endMounth) {
-            //         if (selectedDato <= endDato) {
-            //             indicator = true
-            //         }
-            //     }
-
-            // }
-
-            // if (selectedYear === startYear && selectedYear < endYear) {
-            //     if (selectedMounth > startMounth) {
-            //         indicator = true
-            //     }
-            //     if (selectedMounth === startMounth) {
-            //         if (selectedDato >= startDato) {
-            //             indicator = true
-            //         }
-            //     }
-            // }
-            // if (selectedYear > startYear && selectedYear < endYear) {
-            //     indicator = true
-            // }
-
-            return indicator;
-        }).filter((meeting) => !meeting._draft) // Exclude draft meetings
-        );
-
-
-        setkalenderFilterd(true);
-        setFilterDato(true)
-
-    };
+    setMeetings(newMeetings);
+    setkalenderFilterd(true);
+    setFilterDato(true);
+};
 
     const handleFromTodayMeetings = () => {
         setFilterDato(false)
@@ -213,8 +160,8 @@ const App = ({ event, }) => {
     function RenderMeetings({ meetings, visibleMeetings, kalenderMeetings, kalenderFilterd }) {
         const [sortedMeetings, setSortedMeetings] = useState(meetings)
         const [sortedKalenderMeetings, setSortedKalenderMeetings] = useState(meetings)
-        // console.log('sortedMeetings', sortedMeetings);
-        // console.log('kalenderFilterd', kalenderFilterd);
+        console.log('sortedMeetings', sortedMeetings);
+        console.log('kalenderFilterd', kalenderFilterd);
  
         
         const [pages] = useState(Math.ceil(meetings.length / visibleMeetings));        
@@ -840,65 +787,37 @@ const App = ({ event, }) => {
 
 
 
+    function isSameOrAfter(a, b) {
+        return a.getFullYear() > b.getFullYear() ||
+            a.getFullYear() === b.getFullYear() && a.getMonth() > b.getMonth() ||
+            a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() >= b.getDate();
+    }
 
+    function isSameOrBefore(a, b) {
+        return a.getFullYear() < b.getFullYear() ||
+            a.getFullYear() === b.getFullYear() && a.getMonth() < b.getMonth() ||
+            a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() <= b.getDate();
+    }
 
-
-    const isInckudedDato = (selectedDate) => {
-        let flag = false
-        const selectedYear = parseInt(extractYear(selectedDate))
-        const selectedMounth = parseInt(extractMonth(selectedDate))
-        const selectedDato = parseInt(extractAndModifySubstring(selectedDate))
-        events && events?.items?.filter((meeting) => !meeting._draft).map((meeting) => {
-            const startYear = parseInt(extractYear(meeting['start-dato']))
-            const startMounth = parseInt(extractMonth(meeting['start-dato']))
-            const startDato = parseInt(extractAndModifySubstring(meeting['start-dato']))
-            const endYear = parseInt(extractYear(meeting['slutt-dato']))
-            const endMounth = parseInt(extractMonth(meeting['slutt-dato']))
-            const endDato = parseInt(extractAndModifySubstring(meeting['slutt-dato']))
-            if (selectedYear === startYear && selectedYear === endYear) {
-                if (selectedMounth > startMounth && selectedMounth < endMounth) {
-                    flag = true
+    const isIncludedDate = (selectedDate) => {
+        let flag = false;
+        // Adjust the comparison to include the day after the meeting
+        const selected = selectedDate instanceof Date ? selectedDate : new Date(selectedDate);
+        if (Array.isArray(events?.items)) {
+            events.items.filter((meeting) => !meeting._draft).forEach((meeting) => {
+                const start = new Date(meeting['start-dato']);
+                const end = new Date(meeting['slutt-dato']);
+                // Adjust the comparison to include two days after the meeting
+                end.setDate(end.getDate() + 1);
+                start.setDate(start.getDate() + 1);
+                if (isSameOrAfter(selected, start) && isSameOrBefore(selected, end)) {
+                    flag = true;
                 }
-                if (selectedMounth === startMounth && selectedMounth === endMounth) {
-                    if (selectedDato === startDato) {
-                        flag = true
-                    }
-                }
-
-                if (selectedMounth === startMounth && selectedMounth === endMounth) {
-                    if (selectedDato === startDato && selectedDato === endDato) {
-                        flag = true
-                    }
-                }
-            }
-            // if (selectedYear > startYear && selectedYear === endYear) {
-            //     if (selectedMounth < endMounth) {
-            //         flag = true
-            //     }
-            //     if (selectedMounth === endMounth) {
-            //         if (selectedDato <= endDato) {
-            //             flag = true
-            //         }
-            //     }
-
-            // }
-
-            // if (selectedYear === startYear && selectedYear < endYear) {
-            //     if (selectedMounth > startMounth) {
-            //         flag = true
-            //     }
-            //     if (selectedMounth === startMounth) {
-            //         if (selectedDato >= startDato) {
-            //             flag = true
-            //         }
-            //     }
-            // }
-            // if (selectedYear > startYear && selectedYear < endYear) {
-            //     flag = true
-            // }
-        })
-        return flag
+            });
+        }
+        return flag;
     };
+
 
 
     const handleClick = () => {
@@ -1012,7 +931,7 @@ const App = ({ event, }) => {
                                                 </div>
                                                 <div>
 
-                                                    {isInckudedDato(day?.date) && (
+                                                    {isIncludedDate(day?.date) && (
                                                         <div
                                                             style={{
                                                                 display: "grid",
