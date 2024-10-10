@@ -170,9 +170,9 @@ const App = ({ event, }) => {
     function RenderMeetings({ meetings, visibleMeetings, kalenderMeetings, kalenderFilterd }) {
         const [sortedMeetings, setSortedMeetings] = useState(meetings)
         const [sortedKalenderMeetings, setSortedKalenderMeetings] = useState(meetings)
-        console.log('Rendermeetings sortedMeetings', sortedMeetings);
-        console.log('Rendermeetings kalenderFilterd', kalenderFilterd);
-        console.log('Rendermeetings meetings', meetings);
+        // console.log('Rendermeetings sortedMeetings', sortedMeetings);
+        // console.log('Rendermeetings kalenderFilterd', kalenderFilterd);
+        // console.log('Rendermeetings meetings', meetings);
  
         const meetingsToUse = kalenderFilterd ? kalenderMeetings : meetings; // Determine which list to use
         
@@ -361,7 +361,7 @@ const App = ({ event, }) => {
                     {meetings && sortedMeetings && kalenderMeetings && kalenderFilterd ? (
                         sortedMeetings
                             .map((meeting) => {
-                                console.log('kalenderMeetings', kalenderMeetings);
+                                // console.log('kalenderMeetings', kalenderMeetings);
                                 return (
                                     <li key={meeting?.id} className="relative  ">
                                         <a className='flex flex-col md:flex-row  justify-between py-6 xl:static cursor-pointer border-b-[1px] border-[#F9BB7A]' onClick={() => { window.location.assign("https://www.vindel.no/hva-skjer/" + meeting.slug) }}>
